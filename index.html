@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Slide PRO - Gerador de Slides com IA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Roboto:wght@400;700&family=Montserrat:wght@400;700&family=Lato:wght@400;700&family=Oswald:wght@400;700&family=Merriweather:wght@400;700&family=Open+Sans:wght@400;700&family=Playfair+Display:wght@400;700&family=Poppins:wght@400;700&family=Source+Sans+Pro:wght@400;700&family=Lora:wght@400;700&family=Nunito:wght@400;700&family=Ubuntu:wght@400;700&family=Raleway:wght@400;700&family=Cormorant+Garamond:wght@400;700&family=Noto+Sans:wght@400;700&family=Rubik:wght@400;700&family=Fira+Sans:wght@400;700&family=Quicksand:wght@400;400&family=Cabin:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        @font-face {
+            font-family: 'Diot';
+            src: url('https://fonts.cdnfonts.com/s/72855/Diot.woff') format('woff');
+            font-weight: 400;
+            font-style: normal;
+        }
+        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s ease, color 0.3s ease; }
+        .btn-icon { transition: transform 0.2s; }
+        .btn-icon:hover { transform: scale(1.1); }
+        .controls-hidden { opacity: 0; pointer-events: none; transition: opacity 0.5s ease-out; }
+        .editable { cursor: text; outline: none; }
+        .editable:focus { outline: 2px solid #3b82f6; }
+
+        /* Efeito de vento para a tela de boas-vindas */
+        @keyframes windEffect {
+            from {
+                transform: translateX(0) scale(1);
+                opacity: 1;
+                filter: blur(0px);
+            }
+            to {
+                transform: translateX(200px) scale(1.2);
+                opacity: 0;
+                filter: blur(10px);
+            }
+        }
+        .wind-animation {
+            animation: windEffect 4s forwards;
+        }
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #0d1117;
+            z-index: 2000;
+            transition: opacity 1s ease-out;
+        }
+        .welcome-hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Estilos para o modo escuro (Dark Mode) */
+        body.theme-dark {
+            background-color: #0d1117;
+            color: #E5E7EB;
+        }
+        .theme-dark .glass-panel {
+            background-color: rgba(31, 41, 55, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+        .theme-dark .slide-content-container {
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Estilos para o modo claro (Light Mode) */
+        body.theme-light {
+            background-color: #F3F4F6;
+            color: #1F2937;
+        }
+        .theme-light .glass-panel {
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            color: #1F2937;
+        }
+        .theme-light .slide-content-container {
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #1F2937;
+        }
+
+        /* Ajustes específicos para o modo claro */
+        .theme-light .text-gray-100, .theme-light .text-white { color: #1F2937; }
+        .theme-light .text-gray-300 { color: #4B5563; }
+        .theme-light .text-gray-400 { color: #6B7280; }
+        .theme-light .bg-gray-900 { background-color: #E5E7EB; }
+        .theme-light .bg-gray-800 { background-color: #D1D5DB; }
+        .theme-light .bg-gray-700 { background-color: #9CA3AF; }
+        .theme-light .border-gray-600 { border-color: #D1D5DB; }
+        .theme-light header {
+            background-color: rgba(255, 255, 255, 0.7);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        .theme-light a, .theme-light button, .theme-light input, .theme-light textarea, .theme-light select {
+            color: #1F2937;
+        }
+        .theme-light .font-playfair { color: #1F2937; }
+        .theme-light .font-diot { color: #1F2937; }
+        .theme-light .btn-primary { color: #F9FAFB; }
+        .theme-light .border-white { border-color: #6B7280; }
+        .theme-light .text-blue-600 { color: #2563EB; }
+
+        /* Fontes */
+        .font-Roboto { font-family: 'Roboto', sans-serif; }
+        .font-Montserrat { font-family: 'Montserrat', sans-serif; }
+        .font-Lato { font-family: 'Lato', sans-serif; }
+        .font-Oswald { font-family: 'Oswald', sans-serif; }
+        .font-Merriweather { font-family: 'Merriweather', serif; }
+        .font-OpenSans { font-family: 'Open Sans', sans-serif; }
+        .font-PlayfairDisplay { font-family: 'Playfair Display', serif; }
+        .font-Poppins { font-family: 'Poppins', sans-serif; }
+        .font-SourceSansPro { font-family: 'Source Sans Pro', sans-serif; }
+        .font-Lora { font-family: 'Lora', serif; }
+        .font-Nunito { font-family: 'Nunito', sans-serif; }
+        .font-Ubuntu { font-family: 'Ubuntu', sans-serif; }
+        .font-Raleway { font-family: 'Raleway', sans-serif; }
+        .font-CormorantGaramond { font-family: 'Cormorant Garamond', serif; }
+        .font-NotoSans { font-family: 'Noto Sans', sans-serif; }
+        .font-Rubik { font-family: 'Rubik', sans-serif; }
+        .font-FiraSans { font-family: 'Fira Sans', sans-serif; }
+        .font-Quicksand { font-family: 'Quicksand', sans-serif; }
+        .font-Cabin { font-family: 'Cabin', sans-serif; }
+        .font-Inter { font-family: 'Inter', sans-serif; }
+        .font-Diot { font-family: 'Diot', serif; }
+
+        /* Estilos do novo layout */
+        .btn-primary {
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .hero-bg {
+            background-image: linear-gradient(135deg, #eef2ff 0%, #d2d6f9 100%);
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+
+        #fullscreen-view {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #f3f4f6;
+            z-index: 1000;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .fullscreen-slide {
+            width: 90%;
+            max-width: 1200px;
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem;
+            text-align: center;
+            border-radius: 1.5rem;
+            transition: transform 0.5s ease-in-out;
+            transform-origin: center center;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="theme-dark min-h-screen flex flex-col justify-between">
+
+    <div id="welcome-screen" class="welcome-screen">
+        <h1 id="welcome-text" class="text-4xl sm:text-6xl font-extrabold text-white font-diot">Welcome to <span class="text-blue-600">AI</span></h1>
+    </div>
+
+    <header class="bg-gray-900 bg-opacity-50 backdrop-blur-lg text-white shadow-lg border-b border-gray-700 py-4 fixed w-full z-10">
+        <div class="container mx-auto px-4 sm:px-6 md:px-8 flex justify-between items-center">
+            <a href="#" class="text-2xl sm:text-3xl font-extrabold font-playfair text-white">AI Slide <span class="text-blue-600">PRO</span></a>
+            <div class="flex items-center space-x-2 sm:space-x-4 md:space-x-6">
+                <button id="howToUseBtn" class="btn-primary bg-gray-700 text-sm text-white font-semibold py-1 px-2 rounded-full shadow-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500">Como Usar</button>
+                <button id="themeToggleBtn" class="btn-primary bg-gray-700 text-sm text-white font-semibold py-1 px-2 rounded-full shadow-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                    <span id="themeText">Modo Claro</span>
+                </button>
+                <button id="fullscreenBtn" class="btn-primary bg-purple-600 text-sm text-white font-semibold py-1 px-2 rounded-full shadow-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 hidden">Modo Apresentação</button>
+                <button id="saveProjectBtn" class="btn-primary bg-yellow-500 text-sm text-white font-semibold py-1 px-2 rounded-full shadow-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 hidden">Salvar Projeto</button>
+                <button id="accountBtn" class="btn-primary bg-yellow-500 text-sm text-white font-semibold py-1 px-2 rounded-full shadow-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500">Acessar minha conta</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow flex items-center justify-center min-h-screen">
+        <div class="container mx-auto px-4">
+            <section id="app-features" class="p-8 max-w-4xl w-full mx-auto my-12">
+                <section id="login-panel" class="glass-panel rounded-3xl p-6 w-full mx-auto">
+                    <h2 class="text-3xl font-bold text-gray-100 mb-6 text-center font-diot">Acesse sua conta</h2>
+                    <div class="mb-4">
+                        <label for="emailInput" class="block text-gray-300 font-semibold mb-2">E-mail</label>
+                        <input type="email" id="emailInput" class="w-full p-3 border border-gray-600 bg-gray-900 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200" placeholder="seu-email@exemplo.com">
+                    </div>
+                    <div class="mb-6">
+                        <label for="passwordInput" class="block text-gray-300 font-semibold mb-2">Senha</label>
+                        <input type="password" id="passwordInput" class="w-full p-3 border border-gray-600 bg-gray-900 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200" placeholder="Sua senha">
+                    </div>
+                    <div class="flex space-x-4">
+                        <button
+                            id="loginBtn"
+                            class="flex-grow btn-primary bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            Entrar
+                        </button>
+                        <button
+                            id="signupBtn"
+                            class="flex-grow btn-primary bg-gray-700 text-white font-semibold py-2 px-4 rounded-full shadow-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                        >
+                            Cadastrar
+                        </button>
+                    </div>
+                    <div id="authStatus" class="mt-4 text-center text-red-400 font-medium"></div>
+                </section>
+
+                <section id="generation-panel" class="glass-panel rounded-3xl p-6 w-full mx-auto hidden mt-8">
+                    <h2 class="text-3xl font-bold text-gray-100 mb-6 text-center font-diot">Gerar com IA</h2>
+                    <div class="mb-4">
+                        <label for="promptInput" class="block text-gray-300 font-semibold mb-2">Tópico da Apresentação</label>
+                        <textarea
+                            id="promptInput"
+                            class="w-full h-24 p-3 border border-gray-600 bg-gray-900 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 resize-none"
+                            placeholder="Ex: 'Introdução à Inteligência Artificial', 'Os benefícios da meditação'..."
+                        ></textarea>
+                    </div>
+                    <button
+                        id="generateBtn"
+                        class="w-full btn-primary bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        Gerar Slides
+                    </button>
+                    <div id="statusMessage" class="flex items-center justify-center mt-4 text-gray-400 font-medium">
+                        <svg id="loadingIcon" class="hidden animate-spin h-5 w-5 mr-3 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span id="statusText"></span>
+                    </div>
+                </section>
+
+                <section id="user-dashboard" class="glass-panel rounded-3xl p-6 w-full mx-auto hidden mt-8">
+                    <h2 class="text-3xl font-bold text-gray-100 mb-6 text-center font-diot">Meus Projetos</h2>
+                    <div id="projects-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+                        <div class="text-gray-400 text-center col-span-full">
+                            <p>Nenhum projeto salvo ainda. Crie um novo slide para começar!</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-center mt-6">
+                        <button id="createProjectBtn" class="btn-primary bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            Novo Projeto
+                        </button>
+                    </div>
+                </section>
+
+                <section id="editor-area" class="flex-grow flex flex-col items-center w-full hidden mt-8">
+                    <div id="edit-panel" class="glass-panel rounded-3xl p-4 mb-8 w-full mx-auto flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
+                        <div class="flex flex-wrap items-center justify-center space-x-2 md:space-x-4">
+                            <span class="text-sm font-semibold text-gray-300">Layouts:</span>
+                            <button id="layout-1" class="btn-icon p-2 bg-gray-700 rounded-md hover:bg-gray-600">
+                                <svg class="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                            </button>
+                            <button id="layout-2" class="btn-icon p-2 bg-gray-700 rounded-md hover:bg-gray-600">
+                                <svg class="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h8m4 0h4M4 18h16" /></svg>
+                            </button>
+                            <button id="layout-4" class="btn-icon p-2 bg-gray-700 rounded-md hover:bg-gray-600">
+                                <svg class="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h8M4 14h16M4 18h16" /></svg>
+                            </button>
+                        </div>
+                        <div class="flex flex-wrap items-center justify-center space-x-2 md:space-x-4 mt-4 md:mt-0">
+                            <select id="fontSelect" class="p-2 border border-gray-600 bg-gray-900 text-white rounded-md">
+                                <option value="Diot">Diot</option>
+                                <option value="Inter">Inter</option>
+                                <option value="Roboto">Roboto</option>
+                                <option value="Montserrat">Montserrat</option>
+                                <option value="Lato">Lato</option>
+                                <option value="Oswald">Oswald</option>
+                                <option value="Merriweather">Merriweather</option>
+                                <option value="OpenSans">Open Sans</option>
+                                <option value="PlayfairDisplay">Playfair Display</option>
+                                <option value="Poppins">Poppins</option>
+                                <option value="SourceSansPro">Source Sans Pro</option>
+                                <option value="Lora">Lora</option>
+                                <option value="Nunito">Nunito</option>
+                                <option value="Ubuntu">Ubuntu</option>
+                                <option value="Raleway">Raleway</option>
+                                <option value="CormorantGaramond">Cormorant Garamond</option>
+                                <option value="NotoSans">Noto Sans</option>
+                                <option value="Rubik">Rubik</option>
+                                <option value="FiraSans">Fira Sans</option>
+                                <option value="Quicksand">Quicksand</option>
+                                <option value="Cabin">Cabin</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center space-x-4 mt-4 md:mt-0">
+                            <button id="addImageBtn" class="btn-primary bg-blue-500 text-sm text-white py-1 px-3 rounded-full hover:bg-blue-600">Adicionar Imagem</button>
+                            <button id="deleteSlideBtn" class="btn-primary bg-red-500 text-sm text-white py-1 px-3 rounded-full hover:bg-red-600">Excluir Slide</button>
+                            <button id="addSlideBtn" class="btn-primary bg-gray-500 text-sm text-white py-1 px-3 rounded-full hover:bg-gray-600">Novo Slide</button>
+                        </div>
+                    </div>
+
+                    <div id="slides-grid" class="w-full mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+                    </div>
+                </section>
+            </section>
+        </div>
+    </main>
+    
+    <div id="imageModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center hidden z-50">
+        <div class="glass-panel text-gray-100 p-6 rounded-lg shadow-xl w-11/12 md:w-1/2 mx-auto">
+            <h3 class="text-2xl font-bold mb-4 font-diot">Adicionar Imagem</h3>
+            <div class="flex space-x-2 mb-4">
+                <input type="text" id="imageSearchInput" class="flex-grow p-2 border border-gray-600 bg-gray-900 text-white rounded-md" placeholder="Buscar imagens...">
+                <button id="searchImageBtn" class="bg-blue-600 text-white py-2 px-4 rounded-md">Buscar</button>
+            </div>
+            <div id="imageResults" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-h-60 overflow-y-auto"></div>
+            <div class="flex justify-end mt-4">
+                <button id="closeImageModalBtn" class="bg-gray-700 text-sm text-white py-1 px-3 rounded-md">Cancelar</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="howToUseModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center hidden z-50">
+        <div class="glass-panel text-gray-100 p-6 rounded-lg shadow-xl w-11/12 md:w-1/2 max-h-[80vh] overflow-y-auto mx-auto">
+            <h3 class="text-2xl font-bold mb-4 font-diot">Como Usar o AI Slide PRO</h3>
+            <div class="text-gray-300 space-y-4">
+                <p>1. **Gere seus slides:** Digite o tópico da sua apresentação no campo de texto e clique em **"Gerar Slides"**. A IA criará o conteúdo para você em segundos.</p>
+                <p>2. **Edite os slides:** Clique em um slide para selecioná-lo e então clique nos campos de texto para editá-los diretamente.</p>
+                <p>3. **Mude o layout e estilos:** Use os botões no painel de controle para mudar o layout e alterar o tipo de letra.</p>
+                <p>4. **Adicione imagens:** Clique no botão **"Adicionar Imagem"**, digite o que deseja buscar e clique na imagem para usá-la como fundo.</p>
+                <p>5. **Gerencie os slides:** Adicione novos slides com o botão **"Novo Slide"** ou exclua o slide selecionado com **"Excluir Slide"**.</p>
+                <p>6. **Apresente e salve:** Use o botão **"Modo Apresentação"** para ver os slides em tela cheia e **"Salvar Projeto"** para salvar a apresentação na sua conta.</p>
+                <p class="text-red-400 font-semibold mt-4">**Aviso:** Este é um programa complexo. O uso intenso de recursos como imagens e fontes personalizadas pode deixá-lo um pouco pesado, especialmente em dispositivos mais antigos.</p>
+            </div>
+            <div class="flex justify-end mt-4">
+                <button id="closeHowToUseModalBtn" class="bg-gray-700 text-sm text-white py-1 px-3 rounded-md">Fechar</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="fullscreen-view" class="hidden fixed inset-0 bg-gray-900 z-50 flex items-center justify-center overflow-hidden">
+        <div class="relative w-full h-full flex items-center justify-center">
+            <div id="fullscreenControls" class="absolute inset-0 flex items-center justify-between transition-opacity duration-500">
+                <button id="prevBtn" class="absolute left-4 z-10 text-white bg-gray-800 rounded-full p-2 hover:bg-gray-700 focus:outline-none">
+                    <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                </button>
+                <button id="nextBtn" class="absolute right-4 z-10 text-white bg-gray-800 rounded-full p-2 hover:bg-gray-700 focus:outline-none">
+                    <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                </button>
+                <button id="exitFullscreenBtn" class="absolute top-4 right-4 z-20 text-white bg-gray-800 rounded-full p-2 hover:bg-gray-700 focus:outline-none">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+                <span id="slideCounter" class="absolute bottom-4 left-1/2 -translate-x-1/2 text-white bg-gray-800 rounded-full px-4 py-1"></span>
+            </div>
+            <div id="slides-carousel" class="relative w-full h-full flex items-center justify-center overflow-hidden"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // Tela de boas-vindas
+            const welcomeScreen = document.getElementById('welcome-screen');
+            const welcomeText = document.getElementById('welcome-text');
+
+            // Exibir a tela de boas-vindas com o efeito
+            welcomeText.classList.add('wind-animation');
+            setTimeout(() => {
+                welcomeScreen.classList.add('welcome-hidden');
+            }, 4000);
+
+            const API_KEY_GEMINI = "AIzaSyDfnepNXRHT2CDUgg9n3v6ej5IV2O3ohiI"; 
+            const API_KEY_PEXELS = "qBVmIu4GKw8cv85GznG0UuKzZLc9CDxmGRnOJTm3H1M8OQPR0rrC9fDl"; 
+            
+            const promptInput = document.getElementById('promptInput');
+            const generateBtn = document.getElementById('generateBtn');
+            const statusMessage = document.getElementById('statusMessage');
+            const loadingIcon = document.getElementById('loadingIcon');
+            const statusText = document.getElementById('statusText');
+            const editorArea = document.getElementById('editor-area');
+            const slidesGrid = document.getElementById('slides-grid');
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            const saveProjectBtn = document.getElementById('saveProjectBtn');
+            const exitFullscreenBtn = document.getElementById('exitFullscreenBtn');
+            const fullscreenView = document.getElementById('fullscreen-view');
+            const slidesCarousel = document.getElementById('slides-carousel');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const slideCounter = document.getElementById('slideCounter');
+            const fullscreenControls = document.getElementById('fullscreenControls');
+            const layoutButtons = document.querySelectorAll('#edit-panel [id^="layout-"]');
+            const addImageBtn = document.getElementById('addImageBtn');
+            const deleteSlideBtn = document.getElementById('deleteSlideBtn');
+            const addSlideBtn = document.getElementById('addSlideBtn');
+            const imageModal = document.getElementById('imageModal');
+            const closeImageModalBtn = document.getElementById('closeImageModalBtn');
+            const imageSearchInput = document.getElementById('imageSearchInput');
+            const searchImageBtn = document.getElementById('searchImageBtn');
+            const imageResults = document.getElementById('imageResults');
+            
+            // Dropdown de fontes
+            const fontSelect = document.getElementById('fontSelect');
+
+            // Botões do modal de instrução
+            const howToUseBtn = document.getElementById('howToUseBtn');
+            const howToUseModal = document.getElementById('howToUseModal');
+            const closeHowToUseModalBtn = document.getElementById('closeHowToUseModalBtn');
+            
+            // Botão de alternar tema
+            const themeToggleBtn = document.getElementById('themeToggleBtn');
+            const themeText = document.getElementById('themeText');
+
+            // Painéis
+            const loginPanel = document.getElementById('login-panel');
+            const generationPanel = document.getElementById('generation-panel');
+            const userDashboard = document.getElementById('user-dashboard');
+            
+            // Botões de autenticação
+            const emailInput = document.getElementById('emailInput');
+            const passwordInput = document.getElementById('passwordInput');
+            const loginBtn = document.getElementById('loginBtn');
+            const signupBtn = document.getElementById('signupBtn');
+            const authStatus = document.getElementById('authStatus');
+            const accountBtn = document.getElementById('accountBtn');
+            const createProjectBtn = document.getElementById('createProjectBtn');
+
+            let presentation = {
+                slides: [],
+                activeSlideIndex: -1,
+            };
+            let controlsTimeout;
+            let currentUser = null;
+            let userProjects = [];
+
+            const colorThemes = [
+                { bg: 'bg-gray-800', text: 'text-gray-100' },
+                { bg: 'bg-gray-900', text: 'text-gray-100' }
+            ];
+
+            const layouts = {
+                'layout-1': (slide) => `
+                    <div class="w-full h-full p-8 md:p-12 flex flex-col justify-center items-center text-center slide-content-container">
+                        <h2 contenteditable="true" class="text-3xl sm:text-4xl font-extrabold mb-4 editable ${slide.fontClass} font-diot">${slide.title}</h2>
+                        <p contenteditable="true" class="text-lg sm:text-xl leading-relaxed whitespace-pre-wrap editable font-cormorant">${slide.body}</p>
+                    </div>`,
+                'layout-2': (slide) => `
+                    <div class="w-full h-full p-8 md:p-12 flex flex-col justify-center slide-content-container">
+                        <h2 contenteditable="true" class="text-3xl sm:text-4xl font-extrabold mb-4 editable ${slide.fontClass} font-diot">${slide.title}</h2>
+                        <p contenteditable="true" class="text-lg sm:text-xl leading-relaxed whitespace-pre-wrap editable font-cormorant">${slide.body}</p>
+                    </div>`,
+                'layout-4': (slide) => `
+                    <div class="w-full h-full p-8 md:p-12 flex flex-col justify-center slide-content-container">
+                        <h2 contenteditable="true" class="text-3xl sm:text-4xl font-bold mb-4 editable ${slide.fontClass} font-diot">${slide.title}</h2>
+                        <ul contenteditable="true" class="text-lg sm:text-xl leading-relaxed whitespace-pre-wrap editable list-disc list-inside font-cormorant">
+                            ${slide.body.split('\n').filter(line => line.trim() !== '').map(line => `<li>${line.trim()}</li>`).join('')}
+                        </ul>
+                    </div>`
+            };
+            
+            const renderSlidesGrid = () => {
+                slidesGrid.innerHTML = '';
+                presentation.slides.forEach((slide, index) => {
+                    const slideElement = document.createElement('div');
+                    slideElement.dataset.index = index; 
+                    
+                    const classes = `glass-panel rounded-lg overflow-hidden aspect-video relative group ${slide.theme.text}`;
+                    
+                    if (slide.backgroundImage) {
+                        slideElement.className = `${classes} bg-cover bg-center`;
+                        slideElement.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${slide.backgroundImage})`;
+                    } else {
+                        slideElement.className = `${classes} ${slide.theme.bg}`;
+                    }
+
+                    if (index === presentation.activeSlideIndex) {
+                         slideElement.style.border = '2px solid #3b82f6';
+                    } else {
+                         slideElement.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+                    }
+
+                    const layoutFunction = layouts[slide.layout || 'layout-1'];
+                    slideElement.innerHTML = layoutFunction(slide);
+                    
+                    const editableElements = slideElement.querySelectorAll('[contenteditable="true"]');
+                    editableElements.forEach(el => {
+                        el.addEventListener('input', () => {
+                            const newText = el.innerHTML;
+                            if (el.tagName === 'H2') {
+                                presentation.slides[index].title = newText;
+                            } else if (el.tagName === 'P' || el.tagName === 'UL') {
+                                presentation.slides[index].body = newText;
+                            }
+                        });
+                    });
+
+                    slidesGrid.appendChild(slideElement);
+                });
+            };
+
+            const generateSlides = async () => {
+                const prompt = promptInput.value.trim();
+                if (!prompt) {
+                    statusText.textContent = "Por favor, digite um tópico para gerar os slides.";
+                    return;
+                }
+                editorArea.classList.add('hidden');
+                generateBtn.disabled = true;
+                generateBtn.textContent = 'Gerando...';
+                loadingIcon.classList.remove('hidden');
+                statusText.textContent = 'Aguarde, a IA está trabalhando...';
+                fullscreenBtn.classList.add('hidden');
+                saveProjectBtn.classList.add('hidden');
+                presentation.slides = [];
+
+                try {
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY_GEMINI}`;
+                    const textPayload = {
+                        contents: [{
+                            parts: [
+                                { text: `Crie o conteúdo de slides minimalistas e menos detalhados sobre o seguinte tópico: "${prompt}". Para cada slide, forneça um título e 1 a 2 pontos-chave. Separe cada slide com duas quebras de linha. Responda apenas com o texto, sem formatação extra como asteriscos ou cabeçalhos.` }
+                            ]
+                        }]
+                    };
+                    const textResponse = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(textPayload)
+                    });
+                    if (!textResponse.ok) {
+                        throw new Error(`Erro ao gerar o texto dos slides.`);
+                    }
+                    const textResult = await textResponse.json();
+                    const responseText = textResult.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (!responseText) {
+                        statusText.textContent = 'A API não retornou conteúdo de texto. Tente um tópico diferente.';
+                        return;
+                    }
+
+                    const slideContents = responseText.replace(/\*/g, '').trim().split('\n\n').filter(p => p.trim() !== '');
+                    if (slideContents.length === 0) {
+                        statusText.textContent = 'Nenhum slide foi gerado. Tente um tópico diferente.';
+                        return;
+                    }
+
+                    slideContents.forEach((content, index) => {
+                        const lines = content.split('\n');
+                        const title = lines[0];
+                        const body = lines.slice(1).join('\n');
+                        const theme = colorThemes[index % colorThemes.length];
+                        presentation.slides.push({ title, body, theme, layout: 'layout-1', backgroundImage: null, fontClass: 'font-Diot' });
+                    });
+                    
+                    statusText.textContent = 'Slides gerados com sucesso!';
+                    editorArea.classList.remove('hidden');
+                    fullscreenBtn.classList.remove('hidden');
+                    if (currentUser) {
+                        saveProjectBtn.classList.remove('hidden');
+                    }
+                    presentation.activeSlideIndex = 0;
+                    renderSlidesGrid();
+
+                } catch (error) {
+                    console.error('Erro na requisição:', error);
+                    statusText.textContent = `Erro: ${error.message}`;
+                } finally {
+                    generateBtn.disabled = false;
+                    generateBtn.textContent = 'Gerar Slides';
+                    loadingIcon.classList.add('hidden');
+                }
+            };
+
+            const saveProject = () => {
+                if (!currentUser) {
+                    alert("Por favor, faça login para salvar o projeto.");
+                    return;
+                }
+                if (presentation.slides.length === 0) {
+                    alert("Não há slides para salvar.");
+                    return;
+                }
+                
+                const projectName = prompt("Digite um nome para o seu projeto:");
+                if (!projectName) {
+                    alert("Nome do projeto é obrigatório.");
+                    return;
+                }
+
+                const newProject = {
+                    id: Date.now(),
+                    name: projectName,
+                    slides: presentation.slides,
+                    createdAt: new Date().toISOString()
+                };
+
+                userProjects.push(newProject);
+                localStorage.setItem(`aiSlideProjects_${currentUser.email}`, JSON.stringify(userProjects));
+                alert(`Projeto "${projectName}" salvo com sucesso!`);
+                renderProjectsList();
+            };
+
+            const loadProjectsFromLocalStorage = (userEmail) => {
+                const savedProjects = localStorage.getItem(`aiSlideProjects_${userEmail}`);
+                userProjects = savedProjects ? JSON.parse(savedProjects) : [];
+            };
+
+            const loadProject = (project) => {
+                presentation.slides = project.slides;
+                presentation.activeSlideIndex = 0;
+                renderSlidesGrid();
+                showEditor();
+            };
+
+            const renderProjectsList = () => {
+                const projectsList = document.getElementById('projects-list');
+                projectsList.innerHTML = '';
+                if (userProjects.length === 0) {
+                    projectsList.innerHTML = `<div class="text-gray-400 text-center col-span-full"><p>Nenhum projeto salvo ainda. Crie um novo slide para começar!</p></div>`;
+                } else {
+                    userProjects.forEach(project => {
+                        const projectCard = document.createElement('div');
+                        projectCard.className = 'glass-panel rounded-lg p-4 cursor-pointer hover:scale-105 transition-transform';
+                        projectCard.innerHTML = `<h3 class="text-xl font-bold font-diot text-white">${project.name}</h3><p class="text-gray-400 text-sm mt-2">${project.slides.length} slides</p>`;
+                        projectCard.addEventListener('click', () => loadProject(project));
+                        projectsList.appendChild(projectCard);
+                    });
+                }
+            };
+            
+            const applyLayout = (layoutId) => {
+                if (presentation.activeSlideIndex > -1) {
+                    presentation.slides[presentation.activeSlideIndex].layout = layoutId;
+                    renderSlidesGrid();
+                }
+            };
+
+            const searchImages = async (query) => {
+                if (!query) return;
+                const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=12`;
+                try {
+                    const response = await fetch(url, {
+                        headers: { 'Authorization': API_KEY_PEXELS }
+                    });
+                    const data = await response.json();
+                    imageResults.innerHTML = '';
+                    data.photos.forEach(photo => {
+                        const img = document.createElement('img');
+                        img.src = photo.src.medium;
+                        img.className = 'w-full h-24 object-cover rounded-md cursor-pointer hover:scale-105 transition-transform';
+                        img.addEventListener('click', () => {
+                            if (presentation.activeSlideIndex > -1) {
+                                presentation.slides[presentation.activeSlideIndex].backgroundImage = photo.src.original;
+                                imageModal.classList.add('hidden');
+                                renderSlidesGrid();
+                            }
+                        });
+                        imageResults.appendChild(img);
+                    });
+                } catch (error) {
+                    console.error('Erro ao buscar imagens:', error);
+                    alert('Falha ao buscar imagens. Tente novamente.');
+                }
+            };
+
+            const addSlide = () => {
+                const newSlide = {
+                    title: 'Novo Slide',
+                    body: 'Clique para editar o texto...',
+                    theme: colorThemes[presentation.slides.length % colorThemes.length],
+                    layout: 'layout-1',
+                    backgroundImage: null,
+                    fontClass: 'font-Diot'
+                };
+                presentation.slides.push(newSlide);
+                presentation.activeSlideIndex = presentation.slides.length - 1;
+                renderSlidesGrid();
+            };
+            
+            const deleteSlide = () => {
+                if (presentation.slides.length > 1 && presentation.activeSlideIndex > -1) {
+                    presentation.slides.splice(presentation.activeSlideIndex, 1);
+                    presentation.activeSlideIndex = Math.min(presentation.activeSlideIndex, presentation.slides.length - 1);
+                    renderSlidesGrid();
+                } else if (presentation.slides.length === 1) {
+                    presentation.slides = [];
+                    presentation.activeSlideIndex = -1;
+                    editorArea.classList.add('hidden');
+                    saveProjectBtn.classList.add('hidden');
+                }
+            };
+            
+            const enterFullscreenMode = () => {
+                if (presentation.slides.length === 0) return;
+                
+                slidesCarousel.innerHTML = ''; // Clear existing slides
+                presentation.slides.forEach((slide, index) => {
+                    const slideElement = document.createElement('div');
+                    
+                    const classes = `fullscreen-slide absolute top-0 left-0 w-full h-full p-8 md:p-20 flex-col items-center justify-center transition-all duration-500 ${slide.theme.text} ${slide.fontClass}`;
+                    
+                    if (slide.backgroundImage) {
+                        slideElement.className = `${classes} bg-cover bg-center`;
+                        slideElement.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${slide.backgroundImage})`;
+                    } else {
+                        slideElement.className = `${classes} ${slide.theme.bg}`;
+                    }
+
+                    const titleHTML = `<h2 class="text-4xl sm:text-6xl font-extrabold mb-8 font-diot">${slide.title}</h2>`;
+                    const bodyHTML = `<p class="text-xl sm:text-3xl leading-relaxed whitespace-pre-wrap font-cormorant">${slide.body}</p>`;
+                    
+                    let contentHTML = '';
+                    switch(slide.layout) {
+                        case 'layout-1':
+                        case 'layout-2':
+                            contentHTML = titleHTML + bodyHTML;
+                            break;
+                        case 'layout-4':
+                            const listItems = slide.body.split('\n').filter(line => line.trim() !== '').map(line => `<li>${line.trim()}</li>`).join('');
+                            contentHTML = `${titleHTML}<ul class="text-xl sm:text-3xl leading-relaxed whitespace-pre-wrap list-disc list-inside font-cormorant">${listItems}</ul>`;
+                            break;
+                        default:
+                            contentHTML = titleHTML + bodyHTML;
+                            break;
+                    }
+
+                    slideElement.innerHTML = contentHTML;
+                    slideElement.style.display = 'none';
+                    slidesCarousel.appendChild(slideElement);
+                });
+                
+                fullscreenView.style.display = 'flex';
+                presentation.activeSlideIndex = 0;
+                showCurrentFullscreenSlide();
+                showControls();
+            };
+
+            const showCurrentFullscreenSlide = () => {
+                const slides = slidesCarousel.querySelectorAll('.fullscreen-slide');
+                slides.forEach((slide, index) => {
+                    slide.style.display = (index === presentation.activeSlideIndex) ? 'flex' : 'none';
+                });
+                slideCounter.textContent = `${presentation.activeSlideIndex + 1} de ${presentation.slides.length}`;
+                prevBtn.disabled = presentation.activeSlideIndex === 0;
+                nextBtn.disabled = presentation.activeSlideIndex === presentation.slides.length - 1;
+            };
+
+            const handleNavigation = (direction) => {
+                if (direction === 'next' && presentation.activeSlideIndex < presentation.slides.length - 1) {
+                    presentation.activeSlideIndex++;
+                } else if (direction === 'prev' && presentation.activeSlideIndex > 0) {
+                    presentation.activeSlideIndex--;
+                }
+                showCurrentFullscreenSlide();
+            };
+            
+            const hideControls = () => {
+                fullscreenControls.classList.add('controls-hidden');
+            };
+
+            const showControls = () => {
+                clearTimeout(controlsTimeout);
+                fullscreenControls.classList.remove('controls-hidden');
+                controlsTimeout = setTimeout(hideControls, 2000);
+            };
+
+            const exitFullscreenMode = () => {
+                fullscreenView.style.display = 'none';
+                clearTimeout(controlsTimeout);
+            };
+            
+            // Lógica para alternar o modo claro/escuro
+            const applyTheme = (themeName) => {
+                document.body.classList.remove('theme-light', 'theme-dark');
+                document.body.classList.add(themeName);
+                localStorage.setItem('theme', themeName);
+                themeText.textContent = themeName === 'theme-dark' ? 'Modo Claro' : 'Modo Escuro';
+            };
+            
+            themeToggleBtn.addEventListener('click', () => {
+                const currentTheme = document.body.classList.contains('theme-dark') ? 'theme-light' : 'theme-dark';
+                applyTheme(currentTheme);
+            });
+            
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                applyTheme(savedTheme);
+            } else {
+                applyTheme('theme-dark'); // Tema padrão
+            }
+
+
+        // Gerenciar visibilidade dos painéis
+        const showPanel = (panelId) => {
+            const panels = [loginPanel, generationPanel, userDashboard, editorArea];
+            panels.forEach(panel => panel.classList.add('hidden'));
+            
+            const targetPanel = document.getElementById(panelId);
+            if (targetPanel) {
+                targetPanel.classList.remove('hidden');
+                const showEditorButtons = panelId === 'editor-area';
+                fullscreenBtn.classList.toggle('hidden', !showEditorButtons);
+                saveProjectBtn.classList.toggle('hidden', !(showEditorButtons && currentUser));
+            }
+        };
+
+        const showLogin = () => {
+            showPanel('login-panel');
+            accountBtn.textContent = 'Acessar minha conta';
+        };
+
+        const showDashboard = () => {
+            showPanel('user-dashboard');
+            accountBtn.textContent = 'Minha conta';
+            renderProjectsList();
+        };
+
+        const showEditor = () => {
+            showPanel('editor-area');
+        };
+
+        const checkAuthState = () => {
+            const savedUser = localStorage.getItem('aiSlideCurrentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                loadProjectsFromLocalStorage(currentUser.email);
+                showDashboard();
+            } else {
+                showLogin();
+            }
+        };
+
+        loginBtn.addEventListener('click', () => {
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            const registeredUser = localStorage.getItem('registeredUser');
+
+            if (!email || !password) {
+                authStatus.textContent = 'E-mail e senha são obrigatórios.';
+                return;
+            }
+
+            if (registeredUser) {
+                const user = JSON.parse(registeredUser);
+                if (user.email === email && user.password === password) {
+                    currentUser = { email: email };
+                    localStorage.setItem('aiSlideCurrentUser', JSON.stringify(currentUser));
+                    loadProjectsFromLocalStorage(currentUser.email);
+                    authStatus.textContent = '';
+                    showDashboard();
+                } else {
+                    authStatus.textContent = 'E-mail ou senha incorretos.';
+                }
+            } else {
+                authStatus.textContent = 'Nenhum usuário cadastrado. Por favor, cadastre-se primeiro.';
+            }
+        });
+
+        signupBtn.addEventListener('click', () => {
+             const email = emailInput.value;
+            const password = passwordInput.value;
+
+            if (!email || !password) {
+                authStatus.textContent = 'E-mail e senha são obrigatórios.';
+                return;
+            }
+
+            // Simula o cadastro
+            const newUser = { email: email, password: password };
+            localStorage.setItem('registeredUser', JSON.stringify(newUser));
+
+            authStatus.textContent = 'Cadastro realizado com sucesso! Agora você pode entrar.';
+            authStatus.style.color = '#34d399'; // Cor verde para sucesso
+        });
+
+        accountBtn.addEventListener('click', () => {
+            if (currentUser) {
+                showDashboard();
+            } else {
+                showLogin();
+            }
+        });
+        
+        createProjectBtn.addEventListener('click', () => {
+            showPanel('generation-panel');
+        });
+
+        // Eventos gerais
+        generateBtn.addEventListener('click', generateSlides);
+        fullscreenBtn.addEventListener('click', enterFullscreenMode);
+        exitFullscreenBtn.addEventListener('click', exitFullscreenMode);
+        prevBtn.addEventListener('click', () => handleNavigation('prev'));
+        nextBtn.addEventListener('click', () => handleNavigation('next'));
+        saveProjectBtn.addEventListener('click', saveProject);
+        addSlideBtn.addEventListener('click', addSlide);
+        deleteSlideBtn.addEventListener('click', deleteSlide);
+        addImageBtn.addEventListener('click', () => {
+            if (presentation.activeSlideIndex === -1) {
+                alert("Selecione um slide para adicionar a imagem.");
+                return;
+            }
+            imageModal.classList.remove('hidden');
+        });
+        closeImageModalBtn.addEventListener('click', () => imageModal.classList.add('hidden'));
+        imageSearchInput.addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') {
+                searchImages(imageSearchInput.value);
+            }
+        });
+        searchImageBtn.addEventListener('click', () => searchImages(imageSearchInput.value));
+        
+        layoutButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (presentation.activeSlideIndex !== -1) {
+                     applyLayout(btn.id);
+                } else {
+                    alert("Selecione um slide para mudar o layout.");
+                }
+            });
+        });
+        
+        fontSelect.addEventListener('change', () => {
+            const selectedFont = fontSelect.value;
+            const activeSlide = presentation.slides[presentation.activeSlideIndex];
+            if (activeSlide) {
+                activeSlide.fontClass = `font-${selectedFont.replace(/\s+/g, '')}`;
+                renderSlidesGrid();
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const slideElement = e.target.closest('[data-index]');
+            if (slideElement) {
+                const index = parseInt(slideElement.dataset.index);
+                presentation.activeSlideIndex = index;
+                renderSlidesGrid();
+            }
+        });
+
+        // Eventos do modal de instrução
+        howToUseBtn.addEventListener('click', () => howToUseModal.classList.remove('hidden'));
+        closeHowToUseModalBtn.addEventListener('click', () => howToUseModal.classList.add('hidden'));
+
+        document.addEventListener('keydown', (e) => {
+            if (fullscreenView.style.display === 'flex') {
+                if (e.key === 'ArrowRight') handleNavigation('next');
+                else if (e.key === 'ArrowLeft') handleNavigation('prev');
+            }
+        });
+        fullscreenView.addEventListener('mousemove', showControls);
+        fullscreenView.addEventListener('touchmove', showControls);
+
+        checkAuthState();
+    });
+    </script>
+</body>
+</html>
