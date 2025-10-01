@@ -3,61 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Slide PRO</title>
+    <title>AI Slide PRO 4.0</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Sans+Pro:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
-            --color-primary: #FFFFFF;
-            --color-secondary: #E0E0E0;
-            --color-background-dark: #0A0A0A;
-            --color-background-light: #F0F0F0;
-            --color-text-dark: #000000;
-            --color-text-light: #FFFFFF;
+            --color-bg-start: #ff7e5f;
+            --color-bg-mid: #feb47b;
+            --color-bg-end: #ffcc9b;
+            --color-accent: #e55a40;
+            --color-text-dark: #2c3e50;
+            --color-text-light: #ffffff;
+            --color-primary-cta: #e99c12;
+            --color-glass-bg: rgba(255, 255, 255, 0.6);
+            --color-glass-border: rgba(255, 255, 255, 0.4);
+            --color-glass-shadow: rgba(0, 0, 0, 0.1);
         }
 
-        body.theme-dark {
-            background-color: var(--color-background-dark);
-            color: var(--color-text-light);
-            transition: background-color 0.5s ease;
-        }
-        body.theme-light {
-            background-color: var(--color-background-light);
-            color: var(--color-text-dark);
-            transition: background-color 0.5s ease;
+        @keyframes bg-animation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
         
-        body { font-family: 'Source Sans Pro', sans-serif; }
-        h1, h2, h3, .font-elegant { font-family: 'Playfair Display', serif; }
+        body { 
+            min-height: 10vh;
+            color: var(--color-text-dark);
+            background: linear-gradient(135deg, var(--color-bg-start), var(--color-bg-mid), var(--color-bg-end));
+            background-size: 400% 400%;
+            animation: bg-animation 20s ease infinite;
+            font-family: 'Poppins', sans-serif;
+            transition: background-color 0.5s ease-in-out;
+        }
+
+        /* Beta Version Styles (Pro e Vogue) */
+        body.beta-version {
+            
+            --color-bg-mid: #415A77;
+            background-size: 400% 400%;
+            
+        }
+
+        body.beta-version .glass-panel {
+            background-color: var(--color-glass-bg);
+            border: 1px solid var(--color-glass-border);
+            box-shadow: 0 4px 30px var(--color-glass-shadow);
+        }
+        
+        body.beta-version .btn-primary, body.beta-version .btn-secondary {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--color-text-dark);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+            font-weight: 400;
+        }
+        
+        body.beta-version .btn-primary:hover, body.beta-version .btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
         .glass-panel {
-            background-color: rgba(255, 255, 255, 0.05);
+            background-color: var(--color-glass-bg);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--color-glass-border);
+            box-shadow: 0 4px 30px var(--color-glass-shadow);
+            transition: transform 0.3s ease-in-out, background-color 0.5s ease;
         }
-        .theme-light .glass-panel {
-            background-color: rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
+
         .btn {
             padding: 0.75rem 1.5rem;
-            font-weight: 600;
+            font-weight: 700;
             border-radius: 9999px;
             transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
         }
-        .btn-primary { background-color: var(--color-text-light); color: var(--color-text-dark); }
-        .btn-secondary { background-color: transparent; border: 1px solid var(--color-text-light); color: var(--color-text-light); }
-        .theme-light .btn-primary { background-color: var(--color-text-dark); color: var(--color-text-light); }
-        .theme-light .btn-secondary { border-color: var(--color-text-dark); color: var(--color-text-dark); }
+
+        .btn-primary { 
+            background-color: var(--color-primary-cta);
+            color: var(--color-text-light);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn-primary:hover {
+            background-color: #e68a00;
+        }
+
+        .btn-secondary { 
+            background-color: transparent; 
+            border: 2px solid var(--color-accent);
+            color: var(--color-accent);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--color-accent);
+            color: var(--color-text-light);
+        }
+
+        body.beta-version .navigation-link {
+            color: var(--color-text-dark);
+        }
+
+        body.beta-version .navigation-link:hover {
+            color: var(--color-accent);
+        }
 
         .slide-container {
             width: 100%;
@@ -69,48 +131,62 @@
             justify-content: center;
             transition: all 0.3s ease;
             position: relative;
+            background-size: cover;
+            background-position: center;
+            background-color: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            color: var(--color-text-dark);
         }
-        .slide-container:hover {
-            transform: scale(1.02);
-        }
+
         .slide-container.selected {
-            border: 2px solid #5a5a5a;
+            border: 2px solid var(--color-primary-cta);
         }
+
         .slide-container .editable {
             outline: none;
             transition: color 0.3s ease;
         }
-        .slide-container .editable:focus {
-            outline: 2px solid #a3a3a3;
-        }
-        .theme-light .slide-container.selected { border-color: #a3a3a3; }
-        .theme-light .slide-container .editable:focus { outline-color: #5a5a5a; }
 
-        .navigation-link { transition: color 0.3s ease; }
-        .navigation-link:hover { color: #A3A3A3; }
-        .theme-light .navigation-link:hover { color: #5a5a5a; }
+        .slide-container .editable:focus {
+            outline: 2px solid var(--color-primary-cta);
+        }
+
+        .navigation-link { 
+            transition: color 0.3s ease; 
+            color: var(--color-text-dark);
+            font-weight: 600;
+        }
+
+        .navigation-link:hover { 
+            color: var(--color-primary-cta); 
+        }
 
         .modal-overlay {
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(5px);
             transition: opacity 0.3s ease;
             opacity: 0;
             pointer-events: none;
         }
+
         .modal-overlay.active {
             opacity: 1;
             pointer-events: auto;
         }
+        
         .modal-content {
             transform: translateY(-20px);
             transition: transform 0.3s ease;
         }
+
         .modal-overlay.active .modal-content {
             transform: translateY(0);
         }
+
         .controls-hidden { opacity: 0; pointer-events: none; transition: opacity 0.5s ease-out; }
 
-        /* Fullscreen Presentation Mode */
         #fullscreen-view {
             display: none;
             position: fixed;
@@ -118,12 +194,16 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: var(--color-background-dark);
+            background: linear-gradient(135deg, var(--color-bg-start), var(--color-bg-mid), var(--color-bg-end));
+            background-size: 400% 400%;
+            animation: bg-animation 20s ease infinite;
             z-index: 1000;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            cursor: none;
         }
+        
         .fullscreen-slide {
             width: 100%;
             height: 100%;
@@ -136,18 +216,16 @@
             transition: transform 0.5s ease-in-out;
             transform-origin: center center;
             overflow-y: auto;
-            color: var(--color-text-light); /* Default for dark mode */
-        }
-        .theme-light .fullscreen-slide {
             color: var(--color-text-dark);
-            background-color: var(--color-background-light);
         }
-
+        
         .fullscreen-slide.with-bg {
             background-size: cover;
             background-position: center;
-            color: white; /* Ensure text is readable on images */
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
         }
+        
         .fullscreen-controls {
             position: absolute;
             width: 100%;
@@ -155,14 +233,16 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            pointer-events: none; /* Allow interaction with slide content */
+            pointer-events: none;
             opacity: 0;
             transition: opacity 0.3s ease;
         }
+        
         .fullscreen-controls.active {
             opacity: 1;
             pointer-events: auto;
         }
+        
         .fullscreen-controls button {
             background-color: rgba(0, 0, 0, 0.5);
             color: white;
@@ -171,11 +251,13 @@
             margin: 1rem;
             cursor: pointer;
             transition: background-color 0.3s ease;
-            pointer-events: auto; /* Re-enable for buttons */
+            pointer-events: auto;
         }
+        
         .fullscreen-controls button:hover {
             background-color: rgba(0, 0, 0, 0.8);
         }
+        
         #slideCounter {
             position: absolute;
             bottom: 1rem;
@@ -188,20 +270,156 @@
             font-size: 0.9rem;
             pointer-events: auto;
         }
+
+        .progress-container {
+            width: 100%;
+            background-color: #f3f3f3;
+            border-radius: 50px;
+            overflow: hidden;
+            margin-top: 2rem;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        #progressBar {
+            height: 20px;
+            width: 0%;
+            background-color: #4CAF50;
+            text-align: center;
+            line-height: 20px;
+            color: white;
+            transition: width 0.5s ease;
+        }
+        
+        #laser-pointer {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background-color: rgba(255, 0, 0, 0.8);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1001;
+            box-shadow: 0 0 5px 2px rgba(255, 0, 0, 0.5);
+            transition: transform 0.05s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        /* New Chat styles */
+        #chat-container {
+            height: 60vh;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--color-glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--color-glass-border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 30px var(--color-glass-shadow);
+        }
+
+        #chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+            padding-right: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .user-message, .ai-message {
+            max-width: 80%;
+            padding: 0.75rem;
+            border-radius: 1rem;
+            word-wrap: break-word;
+        }
+        
+        .user-message {
+            background-color: rgba(255, 255, 255, 0.2);
+            align-self: flex-end;
+            text-align: right;
+            color: black;
+        }
+        
+        .ai-message {
+            background-color: rgba(0, 0, 0, 0.1);
+            align-self: flex-start;
+            text-align: left;
+            color: black;
+        }
+        
+        /* New styles for Virtual Assistant */
+        .btn-floating {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            width: 4rem;
+            height: 4rem;
+            border-radius: 50%;
+            background-color: var(--color-primary-cta);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+            z-index: 999;
+            transition: transform 0.3s ease;
+        }
+        
+        .btn-floating:hover {
+            transform: scale(1.1);
+        }
+        
+        .virtual-assistant-container {
+            position: fixed;
+            bottom: 6rem;
+            right: 1.5rem;
+            width: 90%;
+            max-width: 400px;
+            height: 60vh;
+            background-color: var(--color-glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--color-glass-border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 30px var(--color-glass-shadow);
+            z-index: 998;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            transform: translateY(20px);
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .virtual-assistant-container.active {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
     </style>
 </head>
-<body class="theme-dark min-h-screen flex flex-col">
-
+<body class="beta-version">
     <header class="fixed w-full z-20 py-6">
         <div class="container mx-auto px-4 flex justify-between items-center">
-            <a href="#" class="text-3xl font-elegant font-bold">AI Slide PRO</a>
-            <nav class="flex space-x-6">
-                <button id="navLogin" class="navigation-link">Entrar</button>
-                <button id="navGenerate" class="navigation-link">Gerar</button>
-                <button id="navDashboard" class="navigation-link">Dashboard</button>
-                <button id="themeToggleBtn" class="navigation-link">Modo Claro</button>
-                <button id="presentationModeBtn" class="navigation-link hidden">Apresentar</button>
-            </nav>
+            <a href="#" class="text-3xl font-bold">AI Slide <span class="text-[#007BFF]">PRO</span></a>
+            <div class="flex space-x-6 items-center">
+                <div class="flex flex-col items-end">
+                    <span id="clock" class="text-xl font-bold"></span>
+                    <span id="timeSpent" class="text-xs text-gray-600"></span>
+                </div>
+                <nav class="flex space-x-6">
+                    <button id="navLogin" class="navigation-link">Entrar</button>
+                    <button id="navGenerate" class="navigation-link">Gerar</button>
+                    <button id="navDashboard" class="navigation-link">Dashboard</button>
+                    <button id="navGeneral" class="navigation-link">Atualizações 4.0</button>
+                    <button id="navChat" class="navigation-link hidden">Chat GPT</button>
+                    <button id="presentationModeBtn" class="navigation-link hidden">Apresentar</button>
+                </nav>
+            </div>
+            <div id="language-switcher" class="flex items-center space-x-2 hidden">
+                <button id="lang-pt" class="btn btn-secondary text-sm">PT</button>
+                <button id="lang-en" class="btn btn-secondary text-sm">EN</button>
+            </div>
         </div>
     </header>
 
@@ -209,55 +427,57 @@
         <div id="main-content" class="container mx-auto px-4 max-w-6xl w-full">
             
             <section id="login-panel" class="main-panel">
-                <div class="glass-panel p-12 rounded-lg max-w-lg mx-auto">
-                    <h2 class="text-4xl font-elegant mb-8 text-center">Acesse sua Conta</h2>
-                    <div class="space-y-6">
+                <div class="glass-panel p-12 rounded-lg max-w-lg mx-auto text-center">
+                    <h2 class="text-4xl font-bold mb-8" data-i18n="login-title">Liberte Sua Criatividade!</h2>
+                    <p class="mb-8" data-i18n="login-subtitle">Entre para criar, aprender e inspirar. Seu próximo grande projeto começa aqui.</p>
+                    <div class="space-y-6 flex flex-col items-center">
+                        <img id="profile-picture" src="https://via.placeholder.com/150" alt="Foto de Perfil" class="w-24 h-24 rounded-full mb-4 object-cover cursor-pointer">
+                        <input type="file" id="profilePicInput" accept="image/*" class="hidden">
                         <div>
-                            <label for="emailInput" class="block mb-2 text-sm font-semibold">E-mail</label>
-                            <input type="email" id="emailInput" class="w-full p-3 bg-transparent border-b border-white focus:outline-none focus:border-gray-400" placeholder="seu-email@exemplo.com">
-                        </div>
-                        <div>
-                            <label for="passwordInput" class="block mb-2 text-sm font-semibold">Senha</label>
-                            <input type="password" id="passwordInput" class="w-full p-3 bg-transparent border-b border-white focus:outline-none focus:border-gray-400" placeholder="Sua senha">
+                            <label for="nameInput" class="block mb-2 text-sm font-semibold text-center" data-i18n="login-name-label">Seu Nome</label>
+                            <input type="text" id="nameInput" class="w-full p-3 bg-transparent border-b border-gray-400 focus:outline-none focus:border-gray-600 text-center" placeholder="Seu nome">
                         </div>
                     </div>
                     <div class="flex justify-center space-x-4 mt-8">
-                        <button id="loginBtn" class="btn btn-primary">Entrar</button>
-                        <button id="signupBtn" class="btn btn-secondary">Cadastrar</button>
+                        <button id="loginBtn" class="btn btn-primary" data-i18n="login-btn">Entrar</button>
                     </div>
-                    <div id="authStatus" class="mt-6 text-center text-red-400"></div>
+                    <div id="authStatus" class="mt-6 text-center text-red-600"></div>
                 </div>
             </section>
 
             <section id="generation-panel" class="main-panel hidden">
                 <div class="glass-panel p-12 rounded-lg max-w-2xl mx-auto text-center">
-                    <h2 class="text-4xl font-elegant mb-8">Gere com IA</h2>
+                    <h2 class="text-4xl font-bold mb-8" data-i18n="generate-title">Crie com a Inteligência Artificial!</h2>
                     <div class="mb-6">
-                        <textarea id="promptInput" class="w-full h-32 p-4 bg-transparent border border-gray-500 rounded-lg focus:outline-none focus:border-white transition-colors" placeholder="Ex: 'Os benefícios da meditação', 'Introdução à Inteligência Artificial'"></textarea>
+                        <textarea id="promptInput" class="w-full h-32 p-4 bg-transparent border border-gray-400 rounded-lg focus:outline-none focus:border-gray-600 transition-colors" data-i18n="generate-placeholder"></textarea>
                     </div>
-                    <button id="generateBtn" class="btn btn-primary w-full max-w-xs mx-auto">Gerar Slides</button>
-                    <div id="statusMessage" class="flex items-center justify-center mt-4 text-sm text-gray-400">
-                        <svg id="loadingIcon" class="hidden animate-spin h-5 w-5 mr-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <button id="generateBtn" class="btn btn-primary w-full max-w-xs mx-auto" data-i18n="generate-btn">Gerar Slides</button>
+                    <div id="statusMessage" class="flex items-center justify-center mt-4 text-sm text-gray-500">
+                        <svg id="loadingIcon" class="hidden animate-spin h-5 w-5 mr-3 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        <span id="statusText"></span>
+                        <span id="statusText" data-i18n="generate-status-text"></span>
                     </div>
                 </div>
             </section>
 
             <section id="user-dashboard" class="main-panel hidden">
                 <div class="glass-panel p-12 rounded-lg text-center">
-                    <h2 class="text-4xl font-elegant mb-4">Meus Projetos</h2>
-                    <p id="usernameDisplay" class="text-lg mb-8 text-gray-400"></p>
+                    <div class="flex flex-col items-center mb-6">
+                        <img id="dashboardProfilePic" src="https://via.placeholder.com/150" alt="Foto de Perfil do Usuário" class="w-32 h-32 rounded-full mb-4 object-cover">
+                        <button id="changeProfilePicBtn" class="btn btn-secondary text-sm px-4 py-2" data-i18n="dashboard-change-pic-btn">Mudar Foto</button>
+                    </div>
+                    <h2 class="text-4xl font-bold mb-4" data-i18n="dashboard-title">Meus Projetos </h2>
+                    <p id="usernameDisplay" class="text-lg mb-8 text-gray-500"></p>
                     <div id="projects-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        <p class="text-gray-500 col-span-full">Nenhum projeto salvo ainda.</p>
+                        <p class="text-gray-500 col-span-full" data-i18n="dashboard-no-projects">Nenhum projeto salvo ainda.</p>
                     </div>
                     <div class="flex justify-center space-x-4 mt-8">
-                        <button id="createProjectBtn" class="btn btn-primary">Novo Projeto</button>
-                        <button id="uploadProjectBtn" class="btn btn-secondary">Upload</button>
+                        <button id="createProjectBtn" class="btn btn-primary" data-i18n="dashboard-new-project-btn">Novo Projeto</button>
+                        <button id="uploadProjectBtn" class="btn btn-secondary" data-i18n="dashboard-upload-btn">Upload</button>
                         <input type="file" id="uploadInput" accept=".json" class="hidden">
-                        <button id="logoutBtn" class="btn btn-secondary">Sair</button>
+                        <button id="logoutBtn" class="btn btn-secondary" data-i18n="dashboard-logout-btn">Sair</button>
                     </div>
                 </div>
             </section>
@@ -265,43 +485,76 @@
             <section id="editor-area" class="main-panel hidden">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <div class="col-span-1 md:col-span-2 lg:col-span-3 glass-panel p-6 rounded-lg flex flex-wrap items-center justify-center space-x-4 mb-8">
-                        <select id="fontSelect" class="bg-transparent border border-gray-500 rounded-full p-2 text-white">
-                            <option value="PlayfairDisplay">Playfair Display</option>
-                            <option value="SourceSansPro">Source Sans Pro</option>
-                        </select>
-                        <button id="addSlideBtn" class="btn btn-secondary">Novo Slide</button>
-                        <button id="deleteSlideBtn" class="btn btn-secondary">Excluir Slide</button>
-                        <button id="addImageBtn" class="btn btn-secondary">Adicionar Imagem</button>
-                        <button id="saveProjectBtn" class="btn btn-primary">Salvar Projeto</button>
+                        <button id="addSlideBtn" class="btn btn-secondary" data-i18n="editor-new-slide-btn">Novo Slide</button>
+                        <button id="deleteSlideBtn" class="btn btn-secondary" data-i18n="editor-delete-slide-btn">Excluir Slide</button>
+                        <button id="addImageBtn" class="btn btn-secondary" data-i18n="editor-add-image-btn">Adicionar Imagem</button>
+                        <button id="saveProjectBtn" class="btn btn-primary" data-i18n="editor-save-btn">Salvar Projeto</button>
+                        <button id="exportPdfBtn" class="btn btn-secondary hidden" data-i18n="editor-export-pdf-btn">Exportar PDF</button>
+                        <button id="emailProjectBtn" class="btn btn-secondary hidden" data-i18n="editor-email-btn">Enviar por Email</button>
                     </div>
                     <div id="slides-grid" class="col-span-1 md:col-span-2 lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
                 </div>
             </section>
+            
+            <section id="chat-panel" class="main-panel hidden">
+                <div class="glass-panel p-12 rounded-lg max-w-2xl mx-auto text-center">
+                    <h2 class="text-4xl font-bold mb-8" data-i18n="chat-title">Chat M&A Pro Beta</h2>
+                    <div id="chat-container">
+                        <div id="chat-messages"></div>
+                        <div class="flex space-x-2 mt-4">
+                            <input type="text" id="chat-input" class="w-full p-3 rounded-lg bg-transparent border border-gray-400 focus:outline-none focus:border-gray-600" placeholder="Digite sua pergunta..." data-i18n="chat-placeholder">
+                            <button id="send-chat-btn" class="btn btn-primary" data-i18n="chat-send-btn">Enviar</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
+            <section id="general-panel" class="main-panel hidden">
+                <div class="glass-panel p-12 rounded-lg max-w-lg mx-auto text-center mt-12">
+                    <h2 class="text-2xl font-bold mb-4" data-i18n="general-title">Atualizações</h2>
+                    <p class="mb-4" data-i18n="general-version">Versão do Sistema: <span id="currentVersion">4.1 Beta</span></p>
+                    <div class="text-left mt-6">
+                        <p class="font-bold text-lg text-white mb-2">🎉 Uma Nova Experiência Chegou!</p>
+                        <p class="text-sm mb-4">Estamos orgulhosos de apresentar a **versão 4.0 Beta**, uma atualização focada em tornar a sua experiência de criação ainda mais fluida e agradável.</p>
+                        <p class="font-bold mt-4 text-white">✨ O Que Há de Novo?</p>
+                        <ul class="list-disc list-inside text-sm">
+                            <li><strong>Design Renovado:</strong> Uma interface completamente nova, com botões de efeito transparente e um fundo animado em tons de azul para uma navegação visualmente impressionante.</li>
+                            <li><strong>Chat M&A Pro Beta:</strong> Um novo assistente de IA integrado, mais rápido e preciso, pronto para responder às suas perguntas e ajudar na sua pesquisa em tempo real.</li>
+                            <li><strong>Otimização de Performance:</strong> Diversas melhorias internas para garantir um desempenho mais rápido e estável, desde a geração de slides até o modo de apresentação.</li>
+                        </ul>
+                    </div>
+                    <div id="updateStatus" class="mt-4 hidden">
+                        <p id="updateMessage" data-i18n="general-updating">Atualizando...</p>
+                        <div class="progress-container">
+                            <div id="progressBar"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
     </main>
 
     <footer class="text-center py-4 text-gray-500 text-sm">
-        <p>&copy; 2023 AI Slide PRO. Todos os direitos reservados.</p>
+        <p data-i18n="footer-copyright">&copy; 2025 AI Slide PRO 4.0. Todos os direitos reservados.</p>
     </footer>
 
     <div id="imageModal" class="modal-overlay fixed inset-0 flex items-center justify-center z-50">
-        <div class="glass-panel p-8 rounded-lg max-w-2xl w-full text-white modal-content">
-            <h3 class="text-3xl font-elegant mb-4 text-center">Adicionar Imagem</h3>
+        <div class="glass-panel p-8 rounded-lg max-w-2xl w-full text-black modal-content">
+            <h3 class="text-3xl font-bold mb-4 text-center" data-i18n="image-modal-title">Adicionar Imagem</h3>
             <div class="flex space-x-2 mb-4">
-                <input type="text" id="imageSearchInput" class="w-full p-3 bg-transparent border-b border-white focus:outline-none focus:border-gray-400" placeholder="Buscar imagens...">
-                <button id="searchImageBtn" class="btn btn-primary">Buscar</button>
+                <input type="text" id="imageSearchInput" class="w-full p-3 bg-transparent border-b border-gray-400 focus:outline-none focus:border-gray-600" placeholder="Buscar imagens..." data-i18n="image-modal-placeholder">
+                <button id="searchImageBtn" class="btn btn-primary" data-i18n="image-modal-search-btn">Buscar</button>
             </div>
             <div id="imageResults" class="grid grid-cols-2 sm:grid-cols-3 gap-4 max-h-60 overflow-y-auto mt-4"></div>
             <div class="flex justify-end mt-6">
-                <button id="closeImageModalBtn" class="btn btn-secondary">Fechar</button>
+                <button id="closeImageModalBtn" class="btn btn-secondary" data-i18n="image-modal-close-btn">Fechar</button>
             </div>
         </div>
     </div>
-
     
-<div id="fullscreen-view" class="hidden">
+    <div id="fullscreen-view" class="hidden">
         <div id="slides-carousel" class="relative w-full h-full flex items-center justify-center overflow-hidden"></div>
+        <div id="laser-pointer" class="hidden"></div>
         <div class="fullscreen-controls hidden">
             <button id="prevBtn" class="prev-next-btn">
                 <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
@@ -315,6 +568,28 @@
         </div>
     </div>
     
+    <button id="virtualAssistantBtn" class="btn-floating">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8">
+            <path d="M4.912 2.872a.75.75 0 0 0-.214 1.056l1.455 2.518a24.583 24.583 0 0 1-.771 5.185l-1.454 2.518a.75.75 0 0 0 .214 1.056l1.205.696a24.57 24.57 0 0 1 1.79-1.577 24.57 24.57 0 0 1 1.577 1.79l-.696 1.205a.75.75 0 0 0 1.056.214l2.518-1.454a24.583 24.583 0 0 1 5.185.771l2.518 1.455a.75.75 0 0 0 1.056-.214l.696-1.205a24.57 24.57 0 0 1-1.577-1.79c.12-.224.23-.454.332-.693a.75.75 0 0 0-.584-1.157l-2.518-.696A24.583 24.583 0 0 1 12 6.545V4.75a.75.75 0 0 0-1.5 0v1.795a24.583 24.583 0 0 1-5.185.771L3.196 2.658a.75.75 0 0 0-1.056.214Z" />
+        </svg>
+    </button>
+    
+    <div id="virtualAssistantContainer" class="virtual-assistant-container">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold" data-i18n="va-title">Assistente Virtual</h3>
+            <button id="closeVaBtn" class="text-gray-500 hover:text-gray-800">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div id="va-messages" class="flex-grow overflow-y-auto mb-4 p-2 rounded-lg bg-gray-100 dark:bg-gray-800"></div>
+        <div class="flex space-x-2">
+            <input type="text" id="va-input" class="w-full p-3 rounded-lg bg-transparent border border-gray-400 focus:outline-none focus:border-gray-600" placeholder="Digite sua pergunta..." data-i18n="chat-placeholder">
+            <button id="va-send-btn" class="btn btn-primary px-4 py-2" data-i18n="chat-send-btn">Enviar</button>
+        </div>
+    </div>
+    
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const API_KEY_GEMINI = "AIzaSyDfnepNXRHT2CDUgg9n3v6ej5IV2O3ohiI"; 
@@ -323,10 +598,14 @@
             const navLogin = document.getElementById('navLogin');
             const navGenerate = document.getElementById('navGenerate');
             const navDashboard = document.getElementById('navDashboard');
+            const navGeneral = document.getElementById('navGeneral');
+            const navChat = document.getElementById('navChat');
             const loginPanel = document.getElementById('login-panel');
             const generationPanel = document.getElementById('generation-panel');
             const userDashboard = document.getElementById('user-dashboard');
             const editorArea = document.getElementById('editor-area');
+            const generalPanel = document.getElementById('general-panel');
+            const chatPanel = document.getElementById('chat-panel');
 
             const promptInput = document.getElementById('promptInput');
             const generateBtn = document.getElementById('generateBtn');
@@ -335,10 +614,8 @@
             const statusText = document.getElementById('statusText');
             const slidesGrid = document.getElementById('slides-grid');
             
-            const emailInput = document.getElementById('emailInput');
-            const passwordInput = document.getElementById('passwordInput');
+            const nameInput = document.getElementById('nameInput');
             const loginBtn = document.getElementById('loginBtn');
-            const signupBtn = document.getElementById('signupBtn');
             const authStatus = document.getElementById('authStatus');
             const createProjectBtn = document.getElementById('createProjectBtn');
             const saveProjectBtn = document.getElementById('saveProjectBtn');
@@ -356,8 +633,8 @@
             const searchImageBtn = document.getElementById('searchImageBtn');
             const imageResults = document.getElementById('imageResults');
             
-            const fontSelect = document.getElementById('fontSelect');
-            const themeToggleBtn = document.getElementById('themeToggleBtn');
+            const clock = document.getElementById('clock');
+            const timeSpent = document.getElementById('timeSpent');
 
             // Fullscreen Presentation Mode elements
             const presentationModeBtn = document.getElementById('presentationModeBtn');
@@ -368,6 +645,151 @@
             const exitFullscreenBtn = document.getElementById('exitFullscreenBtn');
             const slideCounter = document.getElementById('slideCounter');
             const fullscreenControls = document.querySelector('.fullscreen-controls');
+            const laserPointer = document.getElementById('laser-pointer');
+            let laserTimeout;
+
+            // New elements
+            const exportPdfBtn = document.getElementById('exportPdfBtn');
+            const emailProjectBtn = document.getElementById('emailProjectBtn');
+            const currentVersion = document.getElementById('currentVersion');
+
+            // Profile Picture elements
+            const profilePicture = document.getElementById('profile-picture');
+            const profilePicInput = document.getElementById('profilePicInput');
+            const dashboardProfilePic = document.getElementById('dashboardProfilePic');
+            const changeProfilePicBtn = document.getElementById('changeProfilePicBtn');
+
+            // Chat elements
+            const chatInput = document.getElementById('chat-input');
+            const sendChatBtn = document.getElementById('send-chat-btn');
+            const chatMessages = document.getElementById('chat-messages');
+            
+            // New Virtual Assistant elements
+            const virtualAssistantBtn = document.getElementById('virtualAssistantBtn');
+            const virtualAssistantContainer = document.getElementById('virtualAssistantContainer');
+            const closeVaBtn = document.getElementById('closeVaBtn');
+            const vaInput = document.getElementById('va-input');
+            const vaSendBtn = document.getElementById('va-send-btn');
+            const vaMessages = document.getElementById('va-messages');
+
+
+            // Language elements
+            const languageSwitcher = document.getElementById('language-switcher');
+            const langPtBtn = document.getElementById('lang-pt');
+            const langEnBtn = document.getElementById('lang-en');
+            let currentLanguage = localStorage.getItem('currentLanguage') || 'pt';
+            
+            const translations = {
+                'pt': {
+                    'login-title': 'Liberte Sua Criatividade!',
+                    'login-subtitle': 'Entre para criar, aprender e inspirar. Seu próximo grande projeto começa aqui.',
+                    'login-name-label': 'Seu Nome de Estudante',
+                    'login-btn': 'Entrar',
+                    'generate-title': 'Crie com a Inteligência Artificial!',
+                    'generate-btn': 'Gerar Slides',
+                    'generate-status-text': 'Aguarde, a IA está trabalhando...',
+                    'dashboard-change-pic-btn': 'Mudar Foto',
+                    'dashboard-title': 'Meus Projetos de Estudo',
+                    'dashboard-no-projects': 'Nenhum projeto salvo ainda.',
+                    'dashboard-new-project-btn': 'Novo Projeto',
+                    'dashboard-upload-btn': 'Upload',
+                    'dashboard-logout-btn': 'Sair',
+                    'editor-new-slide-btn': 'Novo Slide',
+                    'editor-delete-slide-btn': 'Excluir Slide',
+                    'editor-add-image-btn': 'Adicionar Imagem',
+                    'editor-save-btn': 'Salvar Projeto',
+                    'editor-export-pdf-btn': 'Exportar PDF',
+                    'editor-email-btn': 'Enviar por Email',
+                    'chat-title': 'Chat M&A Pro Beta',
+                    'chat-placeholder': 'Digite sua pergunta...',
+                    'chat-send-btn': 'Enviar',
+                    'general-title': 'Atualizações',
+                    'general-version': 'Versão do Sistema: ',
+                    'general-updating': 'Atualizando...',
+                    'footer-copyright': '&copy; 2023 AI Slide PRO. Todos os direitos reservados.',
+                    'nav-login': 'Entrar',
+                    'nav-generate': 'Gerar',
+                    'nav-dashboard': 'Dashboard',
+                    'nav-general': 'Atualizações',
+                    'nav-chat': 'Chat',
+                    'nav-present': 'Apresentar',
+                    'image-modal-title': 'Adicionar Imagem',
+                    'image-modal-placeholder': 'Buscar imagens...',
+                    'image-modal-search-btn': 'Buscar',
+                    'image-modal-close-btn': 'Fechar',
+                    'va-title': 'Assistente Virtual',
+                },
+                'en': {
+                    'login-title': 'Unleash Your Creativity!',
+                    'login-subtitle': 'Log in to create, learn, and inspire. Your next big project starts here.',
+                    'login-name-label': 'Your Student Name',
+                    'login-btn': 'Log In',
+                    'generate-title': 'Create with Artificial Intelligence!',
+                    'generate-btn': 'Generate Slides',
+                    'generate-status-text': 'Please wait, the AI is working...',
+                    'dashboard-change-pic-btn': 'Change Photo',
+                    'dashboard-title': 'My Study Projects',
+                    'dashboard-no-projects': 'No projects saved yet.',
+                    'dashboard-new-project-btn': 'New Project',
+                    'dashboard-upload-btn': 'Upload',
+                    'dashboard-logout-btn': 'Log Out',
+                    'editor-new-slide-btn': 'New Slide',
+                    'editor-delete-slide-btn': 'Delete Slide',
+                    'editor-add-image-btn': 'Add Image',
+                    'editor-save-btn': 'Save Project',
+                    'editor-export-pdf-btn': 'Export PDF',
+                    'editor-email-btn': 'Send by Email',
+                    'chat-title': 'Chat M&A Pro Beta',
+                    'chat-placeholder': 'Type your question...',
+                    'chat-send-btn': 'Send',
+                    'general-title': 'Updates',
+                    'general-version': 'System Version: ',
+                    'general-updating': 'Updating...',
+                    'footer-copyright': '&copy; 2023 AI Slide PRO. All rights reserved.',
+                    'nav-login': 'Log In',
+                    'nav-generate': 'Generate',
+                    'nav-dashboard': 'Dashboard',
+                    'nav-general': 'Updates',
+                    'nav-chat': 'Chat',
+                    'nav-present': 'Present',
+                    'image-modal-title': 'Add Image',
+                    'image-modal-placeholder': 'Search images...',
+                    'image-modal-search-btn': 'Search',
+                    'image-modal-close-btn': 'Close',
+                    'va-title': 'Virtual Assistant',
+                }
+            };
+            
+            const updateTexts = () => {
+                const elementsToTranslate = document.querySelectorAll('[data-i18n]');
+                elementsToTranslate.forEach(el => {
+                    const key = el.getAttribute('data-i18n');
+                    if (translations[currentLanguage][key]) {
+                        el.textContent = translations[currentLanguage][key];
+                    }
+                });
+                
+                // Special cases for elements with placeholders or custom text
+                if (currentLanguage === 'en') {
+                    nameInput.placeholder = 'Your name';
+                    chatInput.placeholder = 'Type your question...';
+                    vaInput.placeholder = 'Type your question...';
+                } else {
+                    nameInput.placeholder = 'Seu nome';
+                    chatInput.placeholder = 'Digite sua pergunta...';
+                    vaInput.placeholder = 'Digite sua pergunta...';
+                }
+            };
+
+            const toggleLanguage = (lang) => {
+                currentLanguage = lang;
+                localStorage.setItem('currentLanguage', lang);
+                updateTexts();
+            };
+
+            langPtBtn.addEventListener('click', () => toggleLanguage('pt'));
+            langEnBtn.addEventListener('click', () => toggleLanguage('en'));
+
 
             let presentation = {
                 slides: [],
@@ -376,15 +798,17 @@
             let currentUser = null;
             let userProjects = [];
             let controlsTimeout;
+            let totalTimeInSeconds = parseInt(localStorage.getItem('totalTimeInSeconds')) || 0;
+            let startTime = Date.now();
+            let timerInterval;
 
             const showPanel = (panelId) => {
-                const panels = [loginPanel, generationPanel, userDashboard, editorArea];
+                const panels = [loginPanel, generationPanel, userDashboard, editorArea, generalPanel, chatPanel];
                 panels.forEach(panel => panel.classList.add('hidden'));
                 const targetPanel = document.getElementById(panelId);
                 if (targetPanel) {
                     targetPanel.classList.remove('hidden');
                 }
-                // Show/hide presentation button based on editor area visibility
                 presentationModeBtn.classList.toggle('hidden', panelId !== 'editor-area' || presentation.slides.length === 0);
             };
             
@@ -403,6 +827,13 @@
                     showPanel('login-panel');
                 }
             });
+            navGeneral.addEventListener('click', () => {
+                showPanel('general-panel');
+            });
+            navChat.addEventListener('click', () => {
+                showPanel('chat-panel');
+            });
+
 
             const renderSlidesGrid = () => {
                 slidesGrid.innerHTML = '';
@@ -411,22 +842,18 @@
                     slideElement.dataset.index = index; 
                     
                     const isSelected = index === presentation.activeSlideIndex;
-                    const themeClass = document.body.classList.contains('theme-light') ? 'bg-white text-gray-800' : 'bg-transparent text-white';
                     
-                    slideElement.className = `slide-container ${themeClass} ${isSelected ? 'selected' : ''}`;
+                    slideElement.className = `slide-container ${isSelected ? 'selected' : ''}`;
                     
                     if (slide.backgroundImage) {
                         slideElement.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${slide.backgroundImage})`;
-                        slideElement.style.backgroundSize = 'cover';
-                        slideElement.style.backgroundPosition = 'center';
-                        slideElement.style.color = 'white'; 
+                        slideElement.style.color = '#fff';
                     } else {
-                        slideElement.style.backgroundImage = 'none';
-                        slideElement.style.backgroundColor = document.body.classList.contains('theme-light') ? 'var(--color-background-light)' : 'var(--color-background-dark)';
-                        slideElement.style.color = document.body.classList.contains('theme-light') ? 'var(--color-text-dark)' : 'var(--color-text-light)';
+                         slideElement.style.backgroundImage = 'none';
+                         slideElement.style.color = 'var(--color-text-dark)';
                     }
-
-                    const titleClass = `text-2xl font-elegant font-bold mb-4 editable`;
+                    
+                    const titleClass = `text-2xl font-bold mb-4 editable`;
                     const bodyClass = `text-sm leading-relaxed whitespace-pre-wrap editable`;
 
                     slideElement.innerHTML = `
@@ -454,34 +881,49 @@
             const generateSlides = async () => {
                 const prompt = promptInput.value.trim();
                 if (!prompt) {
-                    statusText.textContent = "Por favor, digite um tópico para gerar os slides.";
+                    statusText.textContent = currentLanguage === 'en' ? "Please enter a topic to generate the slides." : "Por favor, digite um tópico para gerar os slides.";
                     return;
                 }
                 showPanel('editor-area');
                 generateBtn.disabled = true;
-                generateBtn.textContent = 'Gerando...';
+                generateBtn.textContent = currentLanguage === 'en' ? 'Generating...' : 'Gerando...';
                 loadingIcon.classList.remove('hidden');
-                statusText.textContent = 'Aguarde, a IA está trabalhando...';
+                statusText.textContent = currentLanguage === 'en' ? 'Please wait, the AI is working...' : 'Aguarde, a IA está trabalhando...';
                 
                 presentation.slides = [];
 
                 try {
                     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY_GEMINI}`;
+
+                    const ptPrompt = `Crie um conteúdo de slides detalhado e bem estruturado sobre o seguinte tópico: "${prompt}". Para cada slide, forneça um título claro e um corpo de texto. Adicione uma sugestão de imagem (em inglês) para cada slide. Separe cada slide com duas quebras de linha. Responda apenas com o texto, sem formatação extra como asteriscos ou cabeçalhos.
+                    Exemplo de resposta:
+                    Slide 1: Introdução ao Tópico
+                    Ponto 1
+                    Ponto 2
+                    Sugestão de imagem: image of a computer
+                    
+                    Slide 2: Título do Slide
+                    Ponto 1
+                    Ponto 2
+                    Sugestão de imagem: image of a sunset`;
+
+                    const enPrompt = `Create a detailed and well-structured slide content on the following topic: "${prompt}". For each slide, provide a clear title and body text. Add an image suggestion (in English) for each slide. Separate each slide with two line breaks. Respond only with the text, without extra formatting like asterisks or headings.
+                    Example response:
+                    Slide 1: Introduction to the Topic
+                    Point 1
+                    Point 2
+                    Image suggestion: image of a computer
+                    
+                    Slide 2: Slide Title
+                    Point 1
+                    Point 2
+                    Image suggestion: image of a sunset`;
+
+                    const selectedPrompt = currentLanguage === 'en' ? enPrompt : ptPrompt;
+
                     const textPayload = {
                         contents: [{
-                            parts: [
-                                { text: `Crie um conteúdo de slides detalhado e bem estruturado sobre o seguinte tópico: "${prompt}". Para cada slide, forneça um título claro e um corpo de texto. Adicione uma sugestão de imagem (em inglês) para cada slide. Separe cada slide com duas quebras de linha. Responda apenas com o texto, sem formatação extra como asteriscos ou cabeçalhos.
-                                    Exemplo de resposta:
-                                    Slide 1: Introdução ao Tópico
-                                    Ponto 1
-                                    Ponto 2
-                                    Sugestão de imagem: image of a computer
-                                    
-                                    Slide 2: Título do Slide
-                                    Ponto 1
-                                    Ponto 2
-                                    Sugestão de imagem: image of a sunset` }
-                            ]
+                            parts: [{ text: selectedPrompt }]
                         }]
                     };
                     const textResponse = await fetch(apiUrl, {
@@ -490,49 +932,50 @@
                         body: JSON.stringify(textPayload)
                     });
                     if (!textResponse.ok) {
-                        throw new Error(`Erro ao gerar o texto dos slides.`);
+                        throw new Error(`Error generating slide text.`);
                     }
                     const textResult = await textResponse.json();
                     const responseText = textResult.candidates?.[0]?.content?.parts?.[0]?.text;
                     if (!responseText) {
-                        statusText.textContent = 'A API não retornou conteúdo de texto. Tente um tópico diferente.';
+                        statusText.textContent = currentLanguage === 'en' ? 'The API did not return text content. Try a different topic.' : 'A API não retornou conteúdo de texto. Tente um tópico diferente.';
                         return;
                     }
 
                     const slideContents = responseText.replace(/\*/g, '').trim().split('\n\n').filter(p => p.trim() !== '');
                     if (slideContents.length === 0) {
-                        statusText.textContent = 'Nenhum slide foi gerado. Tente um tópico diferente.';
+                        statusText.textContent = currentLanguage === 'en' ? 'No slides were generated. Try a different topic.' : 'Nenhum slide foi gerado. Tente um tópico diferente.';
                         return;
                     }
 
                     slideContents.forEach((content) => {
                         const lines = content.split('\n');
-                        const title = lines[0].replace(/Slide \d+: /, '');
-                        const bodyLines = lines.slice(1).filter(line => !line.includes('Sugestão de imagem:'));
+                        const titleLine = lines[0];
+                        const bodyLines = lines.slice(1).filter(line => !line.includes('Sugestão de imagem:') && !line.includes('Image suggestion:'));
+                        const title = titleLine.replace(/Slide \d+: /, '').replace(/Slide \d+:/, '').trim();
                         const body = bodyLines.map(line => line.trim()).join('\n');
-                        const imageSuggestion = lines.find(line => line.includes('Sugestão de imagem:'))?.replace('Sugestão de imagem:', '').trim();
+                        const imageSuggestion = lines.find(line => line.includes('Sugestão de imagem:') || line.includes('Image suggestion:'))?.replace('Sugestão de imagem:', '').replace('Image suggestion:', '').trim();
 
                         presentation.slides.push({ title, body, backgroundImage: null, imageSuggestion });
                     });
                     
-                    statusText.textContent = 'Slides gerados com sucesso!';
+                    statusText.textContent = currentLanguage === 'en' ? 'Slides generated successfully!' : 'Slides gerados com sucesso!';
                     presentation.activeSlideIndex = 0;
                     renderSlidesGrid();
 
                 } catch (error) {
                     console.error('Erro na requisição:', error);
-                    statusText.textContent = `Erro: ${error.message}`;
+                    statusText.textContent = currentLanguage === 'en' ? `Error: ${error.message}` : `Erro: ${error.message}`;
                 } finally {
                     generateBtn.disabled = false;
-                    generateBtn.textContent = 'Gerar Slides';
+                    generateBtn.textContent = currentLanguage === 'en' ? 'Generate Slides' : 'Gerar Slides';
                     loadingIcon.classList.add('hidden');
                 }
             };
             
             const addSlide = () => {
                 const newSlide = {
-                    title: 'Novo Slide',
-                    body: 'Clique para editar o texto...',
+                    title: currentLanguage === 'en' ? 'New Slide' : 'Novo Slide',
+                    body: currentLanguage === 'en' ? 'Click to edit text...' : 'Clique para editar o texto...',
                     backgroundImage: null,
                     imageSuggestion: null,
                 };
@@ -573,23 +1016,23 @@
                     });
                 } catch (error) {
                     console.error('Erro ao buscar imagens:', error);
-                    alert('Falha ao buscar imagens. Tente novamente.');
+                    alert(currentLanguage === 'en' ? 'Failed to search for images. Please try again.' : 'Falha ao buscar imagens. Tente novamente.');
                 }
             };
 
             const saveProject = () => {
                 if (!currentUser) {
-                    alert("Por favor, faça login para salvar o projeto.");
+                    alert(currentLanguage === 'en' ? "Please log in to save the project." : "Por favor, faça login para salvar o projeto.");
                     return;
                 }
                 if (presentation.slides.length === 0) {
-                    alert("Não há slides para salvar.");
+                    alert(currentLanguage === 'en' ? "There are no slides to save." : "Não há slides para salvar.");
                     return;
                 }
                 
-                const projectName = prompt("Digite um nome para o seu projeto:");
+                const projectName = prompt(currentLanguage === 'en' ? "Enter a name for your project:" : "Digite um nome para o seu projeto:");
                 if (!projectName) {
-                    alert("Nome do projeto é obrigatório.");
+                    alert(currentLanguage === 'en' ? "Project name is required." : "Nome do projeto é obrigatório.");
                     return;
                 }
 
@@ -601,13 +1044,13 @@
                 };
 
                 userProjects.push(newProject);
-                localStorage.setItem(`aiSlideProjects_${currentUser.email}`, JSON.stringify(userProjects));
-                alert(`Projeto "${projectName}" salvo com sucesso!`);
+                localStorage.setItem(`aiSlideProjects_${currentUser.name}`, JSON.stringify(userProjects));
+                alert(currentLanguage === 'en' ? `Project "${projectName}" saved successfully!` : `Projeto "${projectName}" salvo com sucesso!`);
                 renderProjectsList();
             };
 
-            const loadProjectsFromLocalStorage = (userEmail) => {
-                const savedProjects = localStorage.getItem(`aiSlideProjects_${userEmail}`);
+            const loadProjectsFromLocalStorage = (userName) => {
+                const savedProjects = localStorage.getItem(`aiSlideProjects_${userName}`);
                 userProjects = savedProjects ? JSON.parse(savedProjects) : [];
             };
 
@@ -615,16 +1058,16 @@
                 const projectsList = document.getElementById('projects-list');
                 projectsList.innerHTML = '';
                 if (userProjects.length === 0) {
-                    projectsList.innerHTML = `<p class="text-gray-500 col-span-full">Nenhum projeto salvo ainda.</p>`;
+                    projectsList.innerHTML = `<p class="text-gray-500 col-span-full" data-i18n="dashboard-no-projects">${currentLanguage === 'en' ? 'No projects saved yet.' : 'Nenhum projeto salvo ainda.'}</p>`;
                 } else {
                     userProjects.forEach(project => {
                         const projectCard = document.createElement('div');
                         projectCard.className = 'glass-panel p-6 rounded-lg text-left cursor-pointer transition-transform hover:scale-105 relative';
                         projectCard.innerHTML = `
-                            <h3 class="text-xl font-elegant mb-2">${project.name}</h3>
-                            <p class="text-gray-400 text-sm">${project.slides.length} slides</p>
+                            <h3 class="text-xl font-bold mb-2">${project.name}</h3>
+                            <p class="text-gray-500 text-sm">${project.slides.length} slides</p>
                             <div class="flex space-x-2 mt-4">
-                                <button class="btn btn-secondary text-xs px-4 py-2 download-btn" data-project-id="${project.id}">Baixar</button>
+                                <button class="btn btn-secondary text-xs px-4 py-2 download-btn" data-project-id="${project.id}">${currentLanguage === 'en' ? 'Download' : 'Baixar'}</button>
                             </div>
                         `;
                         projectCard.addEventListener('click', (e) => {
@@ -640,7 +1083,6 @@
                 }
             };
             
-            // New download function
             const downloadProjectAsJson = (project) => {
                 const dataStr = JSON.stringify(project, null, 2);
                 const blob = new Blob([dataStr], { type: "application/json" });
@@ -663,34 +1105,139 @@
             };
 
             loginBtn.addEventListener('click', () => {
-                const email = emailInput.value;
-                const password = passwordInput.value;
-                const registeredUser = localStorage.getItem('registeredUser');
+                const name = nameInput.value;
+                if (!name) {
+                    authStatus.textContent = currentLanguage === 'en' ? 'Please enter your name.' : 'Por favor, digite seu nome.';
+                    return;
+                }
+                const profilePic = profilePicture.src;
+                currentUser = { name: name, profilePic: profilePic };
+                localStorage.setItem('aiSlideCurrentUser', JSON.stringify(currentUser));
+                loadProjectsFromLocalStorage(currentUser.name);
+                authStatus.textContent = '';
+                showPanel('user-dashboard');
+                usernameDisplay.textContent = currentLanguage === 'en' ? `Welcome, ${currentUser.name}!` : `Bem-vindo(a), ${currentUser.name}!`;
+                dashboardProfilePic.src = currentUser.profilePic;
+            });
 
-                if (registeredUser) {
-                    const user = JSON.parse(registeredUser);
-                    if (user.email === email && user.password === password) {
-                        currentUser = { email: email };
-                        localStorage.setItem('aiSlideCurrentUser', JSON.stringify(currentUser));
-                        loadProjectsFromLocalStorage(currentUser.email);
-                        authStatus.textContent = '';
-                        showPanel('user-dashboard');
-                        usernameDisplay.textContent = `Bem-vindo(a), ${currentUser.email}!`;
-                    } else {
-                        authStatus.textContent = 'E-mail ou senha incorretos.';
-                    }
-                } else {
-                    authStatus.textContent = 'Nenhum usuário cadastrado. Cadastre-se primeiro.';
+            profilePicture.addEventListener('click', () => {
+                profilePicInput.click();
+            });
+
+            changeProfilePicBtn.addEventListener('click', () => {
+                profilePicInput.click();
+            });
+            
+            profilePicInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const imageUrl = e.target.result;
+                        profilePicture.src = imageUrl;
+                        if (currentUser) {
+                            currentUser.profilePic = imageUrl;
+                            localStorage.setItem('aiSlideCurrentUser', JSON.stringify(currentUser));
+                            dashboardProfilePic.src = imageUrl;
+                        }
+                    };
+                    reader.readAsDataURL(file);
                 }
             });
 
-            signupBtn.addEventListener('click', () => {
-                const email = emailInput.value;
-                const password = passwordInput.value;
-                const newUser = { email: email, password: password };
-                localStorage.setItem('registeredUser', JSON.stringify(newUser));
-                authStatus.textContent = 'Cadastro realizado com sucesso! Agora você pode entrar.';
+            // Chat M&A Logic
+            const addChatMessage = (text, sender, target) => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = sender === 'user' ? 'user-message' : 'ai-message';
+                messageDiv.textContent = text;
+                target.appendChild(messageDiv);
+                target.scrollTop = target.scrollHeight; // Auto-scroll
+            };
+
+            const getChatResponse = async (query) => {
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY_GEMINI}`;
+
+                const ptChatPrompt = `Responda a esta pergunta de forma concisa e útil, como um assistente de IA: "${query}"`;
+                const enChatPrompt = `Answer this question concisely and usefully, like an AI assistant: "${query}"`;
+                const selectedChatPrompt = currentLanguage === 'en' ? enChatPrompt : ptChatPrompt;
+
+                const payload = {
+                    contents: [{
+                        parts: [
+                            { text: selectedChatPrompt }
+                        ]
+                    }]
+                };
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
+                    return result.candidates?.[0]?.content?.parts?.[0]?.text || (currentLanguage === 'en' ? "Sorry, I couldn't get a response. Please try again." : "Desculpe, não consegui obter uma resposta. Tente novamente.");
+                } catch (error) {
+                    console.error("Erro ao chamar a API do Gemini:", error);
+                    return currentLanguage === 'en' ? "Sorry, a connection error occurred. Please try again later." : "Desculpe, ocorreu um erro de conexão. Tente novamente mais tarde.";
+                }
+            };
+
+            const sendChat = async () => {
+                const query = chatInput.value.trim();
+                if (!query) return;
+
+                addChatMessage(query, 'user', chatMessages);
+                chatInput.value = '';
+
+                const aiResponse = await getChatResponse(query);
+                addChatMessage(aiResponse, 'ai', chatMessages);
+            };
+
+            // Text-to-speech function
+            const speakText = (text) => {
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = currentLanguage === 'en' ? 'en-US' : 'pt-BR';
+                    window.speechSynthesis.speak(utterance);
+                } else {
+                    console.warn("API de fala não suportada neste navegador.");
+                }
+            };
+
+            const sendVaChat = async () => {
+                const query = vaInput.value.trim();
+                if (!query) return;
+            
+                addChatMessage(query, 'user', vaMessages);
+                vaInput.value = '';
+            
+                const aiResponse = await getChatResponse(query);
+                addChatMessage(aiResponse, 'ai', vaMessages);
+                speakText(aiResponse); // Added call to speakText
+            };
+            
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendChat();
+                }
             });
+            sendChatBtn.addEventListener('click', sendChat);
+            
+            vaInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendVaChat();
+                }
+            });
+            vaSendBtn.addEventListener('click', sendVaChat);
+            
+            virtualAssistantBtn.addEventListener('click', () => {
+                virtualAssistantContainer.classList.toggle('active');
+            });
+            closeVaBtn.addEventListener('click', () => {
+                virtualAssistantContainer.classList.remove('active');
+            });
+
 
             logoutBtn.addEventListener('click', handleLogout);
             createProjectBtn.addEventListener('click', () => showPanel('generation-panel'));
@@ -709,13 +1256,13 @@
                             presentation.activeSlideIndex = 0;
                             renderSlidesGrid();
                             showPanel('editor-area');
-                            alert('Projeto carregado com sucesso!');
+                            alert(currentLanguage === 'en' ? 'Project loaded successfully!' : 'Projeto carregado com sucesso!');
                         } else {
-                            alert('Arquivo inválido. Certifique-se de carregar um arquivo de projeto JSON válido.');
+                            alert(currentLanguage === 'en' ? 'Invalid file. Make sure to upload a valid JSON project file.' : 'Arquivo inválido. Certifique-se de carregar um arquivo de projeto JSON válido.');
                         }
                     } catch (error) {
                         console.error('Erro ao ler ou analisar o arquivo JSON:', error);
-                        alert('Erro ao carregar o arquivo. O arquivo pode estar corrompido ou não é um JSON válido.');
+                        alert(currentLanguage === 'en' ? 'Error loading file. The file may be corrupted or is not a valid JSON.' : 'Erro ao carregar o arquivo. O arquivo pode estar corrompido ou não é um JSON válido.');
                     }
                 };
                 reader.readAsText(file);
@@ -745,7 +1292,7 @@
             
             addImageBtn.addEventListener('click', () => {
                 if (presentation.activeSlideIndex === -1) {
-                    alert("Selecione um slide para adicionar a imagem.");
+                    alert(currentLanguage === 'en' ? "Select a slide to add the image to." : "Selecione um slide para adicionar a imagem.");
                     return;
                 }
                 imageModal.classList.add('active');
@@ -763,75 +1310,149 @@
             });
             searchImageBtn.addEventListener('click', () => searchImages(imageSearchInput.value));
 
-            themeToggleBtn.addEventListener('click', () => {
-                document.body.classList.toggle('theme-light');
-                document.body.classList.toggle('theme-dark');
-                const themeText = document.body.classList.contains('theme-dark') ? 'Modo Claro' : 'Modo Escuro';
-                themeToggleBtn.textContent = themeText;
-                localStorage.setItem('theme', document.body.classList.contains('theme-dark') ? 'theme-dark' : 'theme-light');
-                renderSlidesGrid(); // Re-render to apply theme to slides
-            });
-            
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'theme-light') {
-                document.body.classList.add('theme-light');
-                document.body.classList.remove('theme-dark');
-                themeToggleBtn.textContent = 'Modo Escuro';
-            } else {
-                document.body.classList.add('theme-dark');
-                document.body.classList.remove('theme-light');
-                themeToggleBtn.textContent = 'Modo Claro';
-            }
-            
             const checkAuthState = () => {
                 const savedUser = localStorage.getItem('aiSlideCurrentUser');
                 if (savedUser) {
                     currentUser = JSON.parse(savedUser);
-                    loadProjectsFromLocalStorage(currentUser.email);
+                    loadProjectsFromLocalStorage(currentUser.name);
                     showPanel('user-dashboard');
-                    usernameDisplay.textContent = `Bem-vindo(a), ${currentUser.email}!`;
+                    usernameDisplay.textContent = currentLanguage === 'en' ? `Welcome, ${currentUser.name}!` : `Bem-vindo(a), ${currentUser.name}!`;
+                    profilePicture.src = currentUser.profilePic;
+                    dashboardProfilePic.src = currentUser.profilePic;
                 } else {
                     showPanel('login-panel');
                 }
             };
             checkAuthState();
 
+            const formatTime = (seconds) => {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            const updateClock = () => {
+                const now = new Date();
+                const hours = now.getHours().toString().padStart(2, '0');
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                const seconds = now.getSeconds().toString().padStart(2, '0');
+                clock.textContent = `${hours}:${minutes}:${seconds}`;
+            };
+
+            const updateTimeSpent = () => {
+                const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+                const currentTotal = totalTimeInSeconds + elapsedTime;
+                timeSpent.textContent = currentLanguage === 'en' ? `Total time: ${formatTime(currentTotal)}` : `Tempo total: ${formatTime(currentTotal)}`;
+            };
+
+            updateClock();
+            setInterval(updateClock, 1000);
+
+            updateTimeSpent();
+            timerInterval = setInterval(updateTimeSpent, 1000);
+
+            window.addEventListener('beforeunload', () => {
+                const sessionTime = Math.floor((Date.now() - startTime) / 1000);
+                totalTimeInSeconds += sessionTime;
+                localStorage.setItem('totalTimeInSeconds', totalTimeInSeconds);
+            });
+            
+            // Initial UI state setup for Beta version
+            document.body.classList.add('beta-version');
+            currentVersion.textContent = '4.1 Beta';
+            exportPdfBtn.classList.remove('hidden');
+            emailProjectBtn.classList.remove('hidden');
+            navChat.classList.remove('hidden');
+            languageSwitcher.classList.remove('hidden');
+            updateTexts();
+
+            // PDF Export Logic
+            exportPdfBtn.addEventListener('click', async () => {
+                if (presentation.slides.length === 0) {
+                    alert(currentLanguage === 'en' ? 'There are no slides to export.' : 'Não há slides para exportar.');
+                    return;
+                }
+                const doc = new jspdf.jsPDF('p', 'pt', 'a4');
+                const margin = 20;
+                let y = margin;
+                
+                for (let i = 0; i < presentation.slides.length; i++) {
+                    const slide = presentation.slides[i];
+                    
+                    if (i > 0) {
+                        doc.addPage();
+                        y = margin;
+                    }
+
+                    const titleText = slide.title;
+                    const bodyText = slide.body;
+
+                    doc.setFontSize(24);
+                    doc.text(titleText, margin, y);
+                    y += 30;
+                    
+                    doc.setFontSize(12);
+                    const splitText = doc.splitTextToSize(bodyText, 550);
+                    doc.text(splitText, margin, y);
+                }
+                
+                doc.save(currentLanguage === 'en' ? 'presentation.pdf' : 'apresentacao.pdf');
+                alert(currentLanguage === 'en' ? 'PDF exported successfully!' : 'PDF exportado com sucesso!');
+            });
+
+            // Email Logic
+            emailProjectBtn.addEventListener('click', () => {
+                if (presentation.slides.length === 0) {
+                    alert(currentLanguage === 'en' ? 'There are no slides to send.' : 'Não há slides para enviar.');
+                    return;
+                }
+                const subject = currentLanguage === 'en' ? `AI Slide PRO Project: ${presentation.slides[0].title}` : `Projeto AI Slide PRO: ${presentation.slides[0].title}`;
+                let body = currentLanguage === 'en' ? `Hello! I would like to share this slide project with you.\n\n` : `Olá! Gostaria de compartilhar este projeto de slides com você.\n\n`;
+                presentation.slides.forEach((slide, index) => {
+                    body += currentLanguage === 'en' ? `--- Slide ${index + 1} ---\n` : `--- Slide ${index + 1} ---\n`;
+                    body += currentLanguage === 'en' ? `Title: ${slide.title}\n` : `Título: ${slide.title}\n`;
+                    body += currentLanguage === 'en' ? `Content:\n${slide.body}\n\n` : `Conteúdo:\n${slide.body}\n\n`;
+                });
+                
+                const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                window.location.href = mailtoLink;
+            });
+
+
             // Fullscreen Presentation Mode Logic
             const enterPresentationMode = () => {
                 if (presentation.slides.length === 0) {
-                    alert("Não há slides para apresentar.");
+                    alert(currentLanguage === 'en' ? "There are no slides to present." : "Não há slides para apresentar.");
                     return;
                 }
 
-                slidesCarousel.innerHTML = ''; // Clear existing slides
+                slidesCarousel.innerHTML = '';
                 presentation.slides.forEach((slide, index) => {
                     const slideElement = document.createElement('div');
-                    const themeClass = document.body.classList.contains('theme-light') ? 'theme-light' : 'theme-dark';
-                    slideElement.className = `fullscreen-slide ${themeClass}`;
+                    slideElement.className = `fullscreen-slide`;
                     
                     if (slide.backgroundImage) {
                         slideElement.classList.add('with-bg');
                         slideElement.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${slide.backgroundImage})`;
+                        slideElement.style.color = '#fff';
                     } else {
-                         // Set background color based on theme for slides without images
-                        slideElement.style.backgroundColor = document.body.classList.contains('theme-light') ? 'var(--color-background-light)' : 'var(--color-background-dark)';
-                        slideElement.style.color = document.body.classList.contains('theme-light') ? 'var(--color-text-dark)' : 'var(--color-text-light)';
+                         slideElement.style.background = 'linear-gradient(135deg, var(--color-bg-start), var(--color-bg-mid), var(--color-bg-end))';
+                         slideElement.style.color = 'var(--color-text-dark)';
                     }
-
-
-                    const titleHTML = `<h2 class="text-5xl font-elegant font-bold mb-8">${slide.title}</h2>`;
+                    const titleHTML = `<h2 class="text-5xl font-bold mb-8">${slide.title}</h2>`;
                     const bodyHTML = `<p class="text-2xl leading-relaxed whitespace-pre-wrap">${slide.body}</p>`;
                     
                     slideElement.innerHTML = titleHTML + bodyHTML;
-                    slideElement.style.display = 'none'; // Hide all initially
+                    slideElement.style.display = 'none';
                     slidesCarousel.appendChild(slideElement);
                 });
                 
                 fullscreenView.style.display = 'flex';
-                presentation.activeSlideIndex = 0;
+                presentation.activeSlideIndex = presentation.activeSlideIndex !== -1 ? presentation.activeSlideIndex : 0;
                 showCurrentFullscreenSlide();
                 showFullscreenControls();
-                document.documentElement.requestFullscreen(); // Request fullscreen mode
+                document.documentElement.requestFullscreen();
             };
 
             const showCurrentFullscreenSlide = () => {
@@ -856,7 +1477,7 @@
                 fullscreenControls.classList.add('active');
                 controlsTimeout = setTimeout(() => {
                     fullscreenControls.classList.remove('active');
-                }, 3000); // Hide after 3 seconds of inactivity
+                }, 3000);
             };
 
             const exitPresentationMode = () => {
@@ -866,17 +1487,27 @@
                     document.exitFullscreen();
                 }
             };
+            
+            const handleLaserPointer = (e) => {
+                laserPointer.style.left = `${e.clientX}px`;
+                laserPointer.style.top = `${e.clientY}px`;
+                laserPointer.classList.remove('hidden');
+                clearTimeout(laserTimeout);
+                laserTimeout = setTimeout(() => {
+                    laserPointer.classList.add('hidden');
+                }, 1000);
+            };
 
             presentationModeBtn.addEventListener('click', enterPresentationMode);
             prevBtn.addEventListener('click', () => handleSlideNavigation('prev'));
             nextBtn.addEventListener('click', () => handleSlideNavigation('next'));
             exitFullscreenBtn.addEventListener('click', exitPresentationMode);
+            fullscreenView.addEventListener('mousemove', handleLaserPointer);
 
             document.addEventListener('keydown', (e) => {
                 if (fullscreenView.style.display === 'flex') {
                     if (e.key === 'ArrowRight') handleSlideNavigation('next');
                     else if (e.key === 'ArrowLeft') handleSlideNavigation('prev');
-                    // New line to handle the 'Escape' key
                     else if (e.key === 'Escape') exitPresentationMode();
                 }
             });
